@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlanMath — Free Calculators for Health Benefits Decisions</title>
+<meta name="description" content="Free, plain-language calculators for HSA vs FSA, COBRA costs, plan comparisons, and Medicare enrollment penalties. No login, no sales pitch.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #F9FAF8;
+    --panel: #FFFFFF;
+    --ink: #14232E;
+    --ink-soft: #4A5A63;
+    --border: #DDE2E1;
+    --a: #1F6F5C;
+    --a-bg: #E7F2EF;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 20px 80px; }
+
+  header { margin-bottom: 40px; }
+
+  .brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--a);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(2rem, 4.5vw, 2.8rem);
+    line-height: 1.15;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+
+  .sub { color: var(--ink-soft); font-size: 1.08rem; max-width: 58ch; }
+
+  .tools-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 32px 0 48px;
+  }
+  @media (max-width: 600px) { .tools-grid { grid-template-columns: 1fr; } }
+
+  .tool-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: border-color 0.15s ease;
+  }
+
+  .tool-card:hover { border-color: var(--a); }
+
+  .tool-card .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--a);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .tool-card h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+
+  .tool-card p {
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    margin: 0 0 14px;
+  }
+
+  .tool-card .cta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--a);
+    font-weight: 600;
+  }
+
+  section.about {
+    background: var(--a-bg);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 8px;
+  }
+
+  section.about h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+    color: var(--a);
+    margin: 0 0 10px;
+  }
+
+  section.about p {
+    color: var(--ink);
+    font-size: 0.96rem;
+    margin: 0;
+  }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+  footer a { color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">PlanMath</div>
+    <h1>Free calculators for health benefits decisions</h1>
+    <p class="sub">No login, no lead form, no sales pitch. Enter your numbers, get a straight answer. Built by someone who works in healthcare benefits administration for a living.</p>
+  </header>
+
+  <div class="tools-grid">
+    <a class="tool-card" href="hsa-vs-fsa-calculator.html">
+      <div class="eyebrow">Open enrollment</div>
+      <h2>HSA vs FSA</h2>
+      <p>Compare real after-tax savings between the two, including the forfeiture risk an FSA carries that an HSA doesn't.</p>
+      <div class="cta">Open calculator →</div>
+    </a>
+
+    <a class="tool-card" href="cobra-cost-estimator.html">
+      <div class="eyebrow">Job loss</div>
+      <h2>COBRA cost estimator</h2>
+      <p>See what COBRA actually costs once your employer stops covering their share, not just the 2% fee everyone talks about.</p>
+      <div class="cta">Open calculator →</div>
+    </a>
+
+    <a class="tool-card" href="health-plan-cost-comparison.html">
+      <div class="eyebrow">Choosing a plan</div>
+      <h2>Plan cost comparison</h2>
+      <p>Compare two plans by total real cost, premium plus out-of-pocket, based on how much care you actually expect to use.</p>
+      <div class="cta">Open calculator →</div>
+    </a>
+
+    <a class="tool-card" href="medicare-part-b-d-penalty-calculator.html">
+      <div class="eyebrow">Medicare enrollment</div>
+      <h2>Part B & D penalty calculator</h2>
+      <p>These penalties are permanent, not one-time. See what a missed enrollment window actually costs over the years.</p>
+      <div class="cta">Open calculator →</div>
+    </a>
+  </div>
+
+  <section class="about">
+    <h2>Why this exists</h2>
+    <p>Most health benefits decisions get made with incomplete numbers, a premium here, a deductible there, no clear total. These tools do the actual math in one place, using the same logic that decides real claims. Nothing here is tax, legal, or insurance advice, and each calculator says exactly what it doesn't account for. Confirm specifics with your plan administrator before making a final decision.</p>
+  </section>
+
+  <footer>
+    <p>PlanMath provides general estimates only. It does not constitute legal, tax, or insurance advice.</p>
+    <p><a href="#">Privacy policy</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

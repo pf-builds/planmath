@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSA vs FSA Calculator 2026 — Which Saves You More?</title>
+<meta name="description" content="Compare your real tax savings between an HSA and FSA for 2026 based on your income, expenses, and coverage type.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #F9FAF8;
+    --panel: #FFFFFF;
+    --ink: #14232E;
+    --ink-soft: #4A5A63;
+    --border: #DDE2E1;
+    --hsa: #1F6F5C;
+    --hsa-bg: #E7F2EF;
+    --fsa: #6B4C9A;
+    --fsa-bg: #F0EBF7;
+    --warn: #A6551D;
+    --warn-bg: #FBEEE3;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+  }
+
+  header {
+    margin-bottom: 36px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .sub {
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    max-width: 56ch;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+
+  .card h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0 0 20px;
+  }
+
+  .field {
+    margin-bottom: 18px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+
+  .field .hint {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    font-weight: 400;
+    margin-top: 4px;
+  }
+
+  input[type="number"], select {
+    width: 100%;
+    padding: 11px 12px;
+    font-size: 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  input[type="number"]:focus, select:focus, input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--hsa);
+    outline-offset: 1px;
+    border-color: var(--hsa);
+  }
+
+  .row2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 520px) {
+    .row2 { grid-template-columns: 1fr; }
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .checkbox-row input { margin-top: 3px; }
+
+  .checkbox-row label {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  /* Ledger output */
+  .ledger {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .ledger-head {
+    padding: 20px 28px 4px;
+  }
+
+  .ledger-head .eyebrow {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  .col {
+    padding: 18px 28px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .col.hsa { background: var(--hsa-bg); }
+  .col.fsa { background: var(--fsa-bg); }
+
+  .col-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+  }
+
+  .col-title strong {
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+  }
+
+  .col.hsa .col-title strong { color: var(--hsa); }
+  .col.fsa .col-title strong { color: var(--fsa); }
+
+  .line {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.92rem;
+    padding: 5px 0;
+    color: var(--ink-soft);
+  }
+
+  .line.total {
+    border-top: 1px dashed var(--border);
+    margin-top: 8px;
+    padding-top: 10px;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 1.05rem;
+  }
+
+  .bar-track {
+    height: 8px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 4px;
+    margin: 14px 0 4px;
+    overflow: hidden;
+  }
+
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .col.hsa .bar-fill { background: var(--hsa); }
+  .col.fsa .bar-fill { background: var(--fsa); }
+
+  .warn {
+    background: var(--warn-bg);
+    border: 1px solid #E8CBB0;
+    color: var(--warn);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    margin-top: 12px;
+    font-weight: 500;
+  }
+
+  .verdict {
+    padding: 22px 28px;
+    border-top: 1px solid var(--border);
+    font-size: 1.02rem;
+  }
+
+  .verdict strong { font-family: 'Fraunces', serif; }
+
+  section.explain {
+    margin-top: 48px;
+  }
+
+  section.explain h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.4rem;
+    margin: 0 0 14px;
+  }
+
+  section.explain h3 {
+    font-size: 1.05rem;
+    margin: 24px 0 8px;
+  }
+
+  section.explain p {
+    color: var(--ink-soft);
+    font-size: 0.98rem;
+  }
+
+  .limits-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.92rem;
+  }
+
+  .limits-table th, .limits-table td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .limits-table th {
+    font-weight: 600;
+    color: var(--ink-soft);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+
+  footer a { color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>HSA or FSA: which actually keeps more of your money?</h1>
+    <p class="sub">Enter your numbers once. See the real after-tax difference for 2026, including the forfeiture risk an FSA carries that an HSA doesn't.</p>
+  </header>
+
+  <div class="card">
+    <h2>Your numbers</h2>
+
+    <div class="field">
+      <label for="coverage">Coverage type</label>
+      <select id="coverage">
+        <option value="4400">Self-only</option>
+        <option value="8750">Family</option>
+      </select>
+      <div class="hint">Sets your 2026 HSA contribution ceiling.</div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label for="expenses">Expected annual medical expenses ($)</label>
+        <input type="number" id="expenses" value="2500" min="0" step="50">
+      </div>
+      <div class="field">
+        <label for="employerContrib">Employer contribution to your account ($)</label>
+        <input type="number" id="employerContrib" value="0" min="0" step="50">
+      </div>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label for="fedRate">Marginal federal tax rate</label>
+        <select id="fedRate">
+          <option value="0.10">10%</option>
+          <option value="0.12" selected>12%</option>
+          <option value="0.22">22%</option>
+          <option value="0.24">24%</option>
+          <option value="0.32">32%</option>
+          <option value="0.35">35%</option>
+          <option value="0.37">37%</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="stateRate">State income tax rate</label>
+        <input type="number" id="stateRate" value="5" min="0" max="13" step="0.1">
+        <div class="hint">Enter 0 if your state has no income tax.</div>
+      </div>
+    </div>
+
+    <div class="field checkbox-row">
+      <input type="checkbox" id="payroll" checked>
+      <label for="payroll">I contribute through payroll deduction (also saves 7.65% FICA tax)</label>
+    </div>
+
+    <div class="field checkbox-row">
+      <label for="confidence" style="display:inline; margin:0;">How sure are you of that expense estimate?</label>
+    </div>
+    <select id="confidence" style="margin-top: -8px;">
+      <option value="0.95">Very sure — recurring prescriptions, ongoing treatment</option>
+      <option value="0.75" selected>Somewhat sure — a normal year, no major surprises expected</option>
+      <option value="0.5">Rough guess — could easily come in lower</option>
+    </select>
+
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-head">
+      <div class="eyebrow">Estimated 2026 outcome</div>
+    </div>
+
+    <div class="col hsa">
+      <div class="col-title">
+        <strong>HSA</strong>
+        <span id="hsaContribDisplay" style="font-family:'IBM Plex Mono',monospace; font-size:0.9rem;"></span>
+      </div>
+      <div class="line"><span>Your contribution</span><span id="hsaYourContrib">—</span></div>
+      <div class="line"><span>Income tax saved</span><span id="hsaIncomeTax">—</span></div>
+      <div class="line"><span>FICA saved (if payroll)</span><span id="hsaFica">—</span></div>
+      <div class="line total"><span>Net tax savings</span><span id="hsaTotal">—</span></div>
+      <div class="bar-track"><div class="bar-fill" id="hsaBar" style="width:0%"></div></div>
+      <div class="hint" style="color:var(--ink-soft); font-size:0.82rem;">Unused funds roll over forever. Nothing here expires.</div>
+    </div>
+
+    <div class="col fsa">
+      <div class="col-title">
+        <strong>FSA</strong>
+        <span id="fsaContribDisplay" style="font-family:'IBM Plex Mono',monospace; font-size:0.9rem;"></span>
+      </div>
+      <div class="line"><span>Your contribution</span><span id="fsaYourContrib">—</span></div>
+      <div class="line"><span>Income tax saved</span><span id="fsaIncomeTax">—</span></div>
+      <div class="line"><span>FICA saved (if payroll)</span><span id="fsaFica">—</span></div>
+      <div class="line total"><span>Gross tax savings</span><span id="fsaTotal">—</span></div>
+      <div class="bar-track"><div class="bar-fill" id="fsaBar" style="width:0%"></div></div>
+      <div class="warn" id="fsaWarning" style="display:none;"></div>
+    </div>
+
+    <div class="verdict" id="verdict"></div>
+  </div>
+
+  <section class="explain">
+    <h2>2026 contribution limits</h2>
+    <table class="limits-table">
+      <tr><th>Account</th><th>Self-only</th><th>Family</th></tr>
+      <tr><td>HSA</td><td>$4,400</td><td>$8,750</td></tr>
+      <tr><td>Health FSA</td><td colspan="2">$3,400</td></tr>
+      <tr><td>Dependent care FSA</td><td colspan="2">$7,500 per household</td></tr>
+    </table>
+    <p>HSA figures add a $1,000 catch-up contribution if you're 55 or older. FSA plans that allow rollover can carry over up to $680 into the next year — anything above that is forfeited if unspent.</p>
+
+    <h3>Why the same tax bracket produces different results</h3>
+    <p>Both accounts reduce your taxable income by the same rate. The difference isn't the tax math, it's what happens to money you don't spend. An HSA keeps it, indefinitely, even if you change jobs or health plans. An FSA is your employer's money again the moment the plan year ends, past whatever small rollover your plan allows.</p>
+
+    <h3>When an FSA still wins</h3>
+    <p>If you don't have a high-deductible health plan, you're not eligible for an HSA at all, and the FSA is your only pre-tax option. FSAs also allow full-year advance access to your full annual election on day one, which matters if you need a large expense covered early in the year before you've contributed that much yet. HSAs only hold what's actually been deposited so far.</p>
+
+    <h3>What this tool doesn't account for</h3>
+    <p>This estimates federal income tax, a flat state rate you enter, and FICA if contributed by payroll. It doesn't model itemized deductions, AMT, phase-outs at high income, or state-specific HSA tax treatment (a few states tax HSA contributions or earnings even though the federal government doesn't). Treat this as a planning estimate, not tax advice.</p>
+  </section>
+
+  <footer>
+    <p>This tool provides general estimates based on 2026 IRS contribution limits and does not constitute tax, legal, or financial advice. Confirm your specific eligibility and limits with your plan administrator or a tax professional.</p>
+    <p><a href="#">Privacy policy</a></p>
+  </footer>
+
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+
+  function calc() {
+    const hsaLimit = parseFloat($('coverage').value);
+    const expenses = Math.max(0, parseFloat($('expenses').value) || 0);
+    const employerContrib = Math.max(0, parseFloat($('employerContrib').value) || 0);
+    const fedRate = parseFloat($('fedRate').value);
+    const stateRate = (parseFloat($('stateRate').value) || 0) / 100;
+    const payroll = $('payroll').checked;
+    const confidence = parseFloat($('confidence').value);
+    const ficaRate = 0.0765;
+
+    const totalRate = fedRate + stateRate + (payroll ? ficaRate : 0);
+    const fedStateOnly = fedRate + stateRate;
+
+    // HSA: contribute up to limit minus employer contribution, capped by limit itself
+    const hsaAvailable = Math.max(0, hsaLimit - employerContrib);
+    const hsaYourContrib = Math.min(hsaAvailable, Math.max(expenses - employerContrib, 0)) || Math.min(hsaAvailable, expenses);
+    const hsaContribFinal = Math.min(hsaAvailable, Math.max(expenses, 0));
+    const hsaIncomeTaxSaved = hsaContribFinal * fedStateOnly;
+    const hsaFicaSaved = payroll ? hsaContribFinal * ficaRate : 0;
+    const hsaTotalSaved = hsaIncomeTaxSaved + hsaFicaSaved;
+
+    // FSA: capped at 3400, must use-it-or-lose-it beyond $680 rollover
+    const fsaLimit = 3400;
+    const fsaContribFinal = Math.min(fsaLimit, expenses);
+    const fsaIncomeTaxSaved = fsaContribFinal * fedStateOnly;
+    const fsaFicaSaved = payroll ? fsaContribFinal * ficaRate : 0;
+    const fsaGrossSaved = fsaIncomeTaxSaved + fsaFicaSaved;
+
+    // Forfeiture risk: expected unspent = contrib * (1 - confidence), minus $680 protected rollover
+    const expectedUnspent = fsaContribFinal * (1 - confidence);
+    const forfeited = Math.max(0, expectedUnspent - 680);
+    const forfeitedTaxValue = forfeited * totalRate;
+    const fsaNetSaved = fsaGrossSaved - forfeitedTaxValue;
+
+    // Display
+    $('hsaContribDisplay').textContent = fmt(hsaContribFinal) + ' of ' + fmt(hsaLimit);
+    $('hsaYourContrib').textContent = fmt(hsaContribFinal);
+    $('hsaIncomeTax').textContent = fmt(hsaIncomeTaxSaved);
+    $('hsaFica').textContent = payroll ? fmt(hsaFicaSaved) : '—';
+    $('hsaTotal').textContent = fmt(hsaTotalSaved);
+
+    $('fsaContribDisplay').textContent = fmt(fsaContribFinal) + ' of ' + fmt(fsaLimit);
+    $('fsaYourContrib').textContent = fmt(fsaContribFinal);
+    $('fsaIncomeTax').textContent = fmt(fsaIncomeTaxSaved);
+    $('fsaFica').textContent = payroll ? fmt(fsaFicaSaved) : '—';
+    $('fsaTotal').textContent = fmt(fsaNetSaved) + (forfeited > 0 ? ' (after risk)' : '');
+
+    const maxBar = Math.max(hsaTotalSaved, fsaGrossSaved, 1);
+    $('hsaBar').style.width = Math.min(100, (hsaTotalSaved / maxBar) * 100) + '%';
+    $('fsaBar').style.width = Math.min(100, (fsaNetSaved / maxBar) * 100) + '%';
+
+    const warnEl = $('fsaWarning');
+    if (forfeited > 0) {
+      warnEl.style.display = 'block';
+      warnEl.textContent = 'At this confidence level, you could forfeit roughly ' + fmt(forfeited) + ' of unspent funds, worth about ' + fmt(forfeitedTaxValue) + ' in lost tax value.';
+    } else {
+      warnEl.style.display = 'none';
+    }
+
+    const verdictEl = $('verdict');
+    if (hsaLimit > 0 && hsaTotalSaved >= fsaNetSaved) {
+      verdictEl.innerHTML = '<strong>HSA comes out ahead</strong> by roughly ' + fmt(hsaTotalSaved - fsaNetSaved) + ' in this scenario, and you keep the funds even if you don\'t spend them this year. This assumes you\'re enrolled in a high-deductible health plan — the FSA is your only option otherwise.';
+    } else {
+      verdictEl.innerHTML = '<strong>FSA comes out ahead</strong> by roughly ' + fmt(fsaNetSaved - hsaTotalSaved) + ' in this scenario, mainly because you\'re not on a high-deductible plan or your HSA contribution room is limited by an employer contribution. Just be realistic about the expense estimate above — that\'s the only real risk with an FSA.';
+    }
+  }
+
+  document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calc));
+  calc();
+</script>
+
+</body>
+</html>

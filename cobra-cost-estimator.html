@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COBRA Cost Estimator 2026 — What You'll Actually Pay</title>
+<meta name="description" content="Estimate your real monthly COBRA premium after job loss, including the 2% admin fee and disability extension rates, and see how it compares to what you paid as an employee.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #F9FAF8;
+    --panel: #FFFFFF;
+    --ink: #14232E;
+    --ink-soft: #4A5A63;
+    --border: #DDE2E1;
+    --hsa: #1F6F5C;
+    --hsa-bg: #E7F2EF;
+    --warn: #A6551D;
+    --warn-bg: #FBEEE3;
+    --danger: #A6321D;
+    --danger-bg: #FBE7E3;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+  }
+
+  header { margin-bottom: 36px; }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .sub { color: var(--ink-soft); font-size: 1.05rem; max-width: 58ch; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+
+  .card h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0 0 20px;
+  }
+
+  .field { margin-bottom: 18px; }
+
+  .field label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+
+  .field .hint {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    font-weight: 400;
+    margin-top: 4px;
+  }
+
+  input[type="number"], select {
+    width: 100%;
+    padding: 11px 12px;
+    font-size: 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  input[type="number"]:focus, select:focus, input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--hsa);
+    outline-offset: 1px;
+    border-color: var(--hsa);
+  }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 520px) { .row2 { grid-template-columns: 1fr; } }
+
+  .checkbox-row { display: flex; align-items: flex-start; gap: 10px; }
+  .checkbox-row input { margin-top: 3px; }
+  .checkbox-row label { font-size: 0.92rem; font-weight: 500; color: var(--ink); }
+
+  .ledger {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .ledger-head { padding: 20px 28px 4px; }
+
+  .ledger-head .eyebrow {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  .col { padding: 18px 28px 24px; border-top: 1px solid var(--border); }
+  .col.hsa { background: var(--hsa-bg); }
+
+  .col-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .col-title strong { font-family: 'Fraunces', serif; font-size: 1.15rem; color: var(--hsa); }
+
+  .line {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.92rem;
+    padding: 5px 0;
+    color: var(--ink-soft);
+  }
+
+  .line.total {
+    border-top: 1px dashed var(--border);
+    margin-top: 8px;
+    padding-top: 10px;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 1.05rem;
+  }
+
+  .shock {
+    background: var(--danger-bg);
+    border: 1px solid #E8C0B0;
+    color: var(--danger);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 0.92rem;
+    margin-top: 14px;
+    font-weight: 500;
+  }
+
+  .shock strong { font-family: 'IBM Plex Mono', monospace; }
+
+  .warn {
+    background: var(--warn-bg);
+    border: 1px solid #E8CBB0;
+    color: var(--warn);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    margin-top: 12px;
+    font-weight: 500;
+  }
+
+  .timeline {
+    padding: 18px 28px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .timeline table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .timeline th, .timeline td {
+    text-align: left;
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .timeline th {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: var(--ink-soft);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  section.explain { margin-top: 48px; }
+  section.explain h2 { font-family: 'Fraunces', serif; font-size: 1.4rem; margin: 0 0 14px; }
+  section.explain h3 { font-size: 1.05rem; margin: 24px 0 8px; }
+  section.explain p { color: var(--ink-soft); font-size: 0.98rem; }
+
+  .limits-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.92rem; }
+  .limits-table th, .limits-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .limits-table th { font-weight: 600; color: var(--ink-soft); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+  footer a { color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>What will COBRA actually cost you?</h1>
+    <p class="sub">Enter what your health plan actually costs, not just what came out of your paycheck. COBRA means paying the whole thing, plus a fee.</p>
+  </header>
+
+  <div class="card">
+    <h2>Your plan</h2>
+
+    <div class="row2">
+      <div class="field">
+        <label for="employeeShare">What you paid per month</label>
+        <input type="number" id="employeeShare" value="150" min="0" step="10">
+        <div class="hint">Your payroll deduction for health coverage.</div>
+      </div>
+      <div class="field">
+        <label for="employerShare">What your employer paid per month</label>
+        <input type="number" id="employerShare" value="450" min="0" step="10">
+        <div class="hint">Check a pay stub or benefits summary if unsure.</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="qualifyingEvent">Why you're losing coverage</label>
+      <select id="qualifyingEvent">
+        <option value="18">Job loss or reduced hours (18 months)</option>
+        <option value="36">Divorce, death of employee, dependent aging out, or employee's Medicare entitlement (36 months)</option>
+      </select>
+    </div>
+
+    <div class="field checkbox-row">
+      <input type="checkbox" id="disability">
+      <label for="disability">I qualify for the Social Security disability extension (adds 11 months, months 19-29, at a higher rate)</label>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-head"><div class="eyebrow">Estimated COBRA cost</div></div>
+
+    <div class="col hsa">
+      <div class="col-title"><strong>Months 1-18</strong><span id="standardRateDisplay" style="font-family:'IBM Plex Mono',monospace; font-size:0.9rem;"></span></div>
+      <div class="line"><span>Full plan premium</span><span id="fullPremium">—</span></div>
+      <div class="line"><span>2% admin fee</span><span id="adminFee">—</span></div>
+      <div class="line total"><span>Your monthly COBRA cost</span><span id="standardTotal">—</span></div>
+
+      <div class="shock" id="shockBox"></div>
+    </div>
+
+    <div class="timeline" id="extensionTimeline" style="display:none;">
+      <div style="font-family:'Fraunces',serif; font-weight:600; margin-bottom:10px; color:var(--warn);">Disability extension: months 19-29</div>
+      <div class="line"><span>Rate during extension (up to 150%)</span><span id="disabilityTotal">—</span></div>
+      <div class="warn">This higher rate only applies during the 11-month disability extension. Your plan may charge less than the maximum 150%, confirm the exact rate with your plan administrator.</div>
+    </div>
+
+    <div class="timeline">
+      <table>
+        <tr><th>Period</th><th>Monthly cost</th><th>Months</th><th>Subtotal</th></tr>
+        <tr>
+          <td>Standard COBRA</td>
+          <td id="tblStandardRate">—</td>
+          <td id="tblStandardMonths">—</td>
+          <td id="tblStandardSubtotal">—</td>
+        </tr>
+        <tr id="tblExtensionRow" style="display:none;">
+          <td>Disability extension</td>
+          <td id="tblExtRate">—</td>
+          <td>11</td>
+          <td id="tblExtSubtotal">—</td>
+        </tr>
+        <tr>
+          <td style="font-weight:700;">Total over full election period</td>
+          <td></td>
+          <td></td>
+          <td id="tblGrandTotal" style="font-weight:700;">—</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <section class="explain">
+    <h2>How this is calculated</h2>
+    <table class="limits-table">
+      <tr><th>Period</th><th>Maximum you can be charged</th></tr>
+      <tr><td>Months 1-18 (standard)</td><td>102% of the full premium</td></tr>
+      <tr><td>Months 19-29 (disability extension only)</td><td>150% of the full premium</td></tr>
+    </table>
+    <p>COBRA doesn't reduce or change your coverage, you keep the exact same plan, doctors, and deductible you had as an employee. What changes is who pays. Your employer stops covering their share, and the law allows the plan to add up to a 2% fee on top of the full cost to cover administration.</p>
+
+    <h3>Why the number often comes as a shock</h3>
+    <p>Employers commonly cover 70-80% of a health premium. Losing that share is the actual cost of COBRA, the 2% fee is a small add-on next to it. If your employer paid $450 of a $600 plan, your COBRA bill isn't a 2% bump on your old $150, it's the full $600 plus roughly $12.</p>
+
+    <h3>When the disability extension applies</h3>
+    <p>If the Social Security Administration determines you're disabled at any point during your first 60 days of COBRA coverage, you and your covered family members can extend coverage from 18 to 29 months. You must notify your plan administrator within 60 days of that determination and before your initial 18 months run out, missing that window forfeits the extension permanently.</p>
+
+    <h3>What this doesn't account for</h3>
+    <p>This is a national estimate. Your actual premium depends entirely on the specific plan your employer offered, not a state average. If your employer had fewer than 20 employees, federal COBRA may not apply at all, most states have a separate "mini-COBRA" law with its own rules and durations. This tool also doesn't model ACA marketplace alternatives, which may cost less depending on your income after job loss and available subsidies. Confirm your exact premium and rights with your plan administrator.</p>
+  </section>
+
+  <footer>
+    <p>This tool provides general estimates based on federal COBRA rules and does not constitute legal, tax, or insurance advice. Confirm your specific plan cost and eligibility with your plan administrator.</p>
+    <p><a href="#">Privacy policy</a></p>
+  </footer>
+
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+
+  function calc() {
+    const employeeShare = Math.max(0, parseFloat($('employeeShare').value) || 0);
+    const employerShare = Math.max(0, parseFloat($('employerShare').value) || 0);
+    const fullPremium = employeeShare + employerShare;
+    const standardMonths = parseInt($('qualifyingEvent').value);
+    const hasDisability = $('disability').checked && standardMonths === 18;
+
+    const adminFee = fullPremium * 0.02;
+    const standardTotal = fullPremium + adminFee;
+    const disabilityTotal = fullPremium * 1.50;
+
+    $('fullPremium').textContent = fmt(fullPremium);
+    $('adminFee').textContent = fmt(adminFee);
+    $('standardTotal').textContent = fmt(standardTotal) + '/mo';
+    $('standardRateDisplay').textContent = '102% of premium';
+
+    const increase = standardTotal - employeeShare;
+    const shockBox = $('shockBox');
+    if (employeeShare > 0) {
+      const multiplier = (standardTotal / employeeShare).toFixed(1);
+      shockBox.innerHTML = 'You paid <strong>' + fmt(employeeShare) + '/mo</strong> as an employee. Under COBRA you\'d pay <strong>' + fmt(standardTotal) + '/mo</strong>, about <strong>' + multiplier + 'x</strong> more, an increase of ' + fmt(increase) + '/mo.';
+    } else {
+      shockBox.innerHTML = 'Under COBRA you\'d pay <strong>' + fmt(standardTotal) + '/mo</strong>, the full premium your employer previously covered plus the admin fee.';
+    }
+
+    const extTimeline = $('extensionTimeline');
+    const extRow = $('tblExtensionRow');
+    if (hasDisability) {
+      extTimeline.style.display = 'block';
+      extRow.style.display = 'table-row';
+      $('disabilityTotal').textContent = fmt(disabilityTotal) + '/mo';
+      $('tblExtRate').textContent = fmt(disabilityTotal) + '/mo';
+      $('tblExtSubtotal').textContent = fmt(disabilityTotal * 11);
+    } else {
+      extTimeline.style.display = 'none';
+      extRow.style.display = 'none';
+    }
+
+    const standardDuration = hasDisability ? 18 : standardMonths;
+    $('tblStandardRate').textContent = fmt(standardTotal) + '/mo';
+    $('tblStandardMonths').textContent = standardDuration;
+    const standardSubtotal = standardTotal * standardDuration;
+    $('tblStandardSubtotal').textContent = fmt(standardSubtotal);
+
+    const grandTotal = hasDisability ? standardSubtotal + (disabilityTotal * 11) : standardSubtotal;
+    $('tblGrandTotal').textContent = fmt(grandTotal);
+  }
+
+  document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calc));
+  calc();
+</script>
+
+</body>
+</html>

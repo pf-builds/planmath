@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Plan Cost Comparison 2026 — Premium + Out-of-Pocket, Side by Side</title>
+<meta name="description" content="Compare two health plans by total real cost, premium plus deductible, coinsurance, and out-of-pocket max, based on how much care you actually expect to use.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #F9FAF8;
+    --panel: #FFFFFF;
+    --ink: #14232E;
+    --ink-soft: #4A5A63;
+    --border: #DDE2E1;
+    --a: #1F6F5C;
+    --a-bg: #E7F2EF;
+    --b: #6B4C9A;
+    --b-bg: #F0EBF7;
+    --warn: #A6551D;
+    --warn-bg: #FBEEE3;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 800px; margin: 0 auto; padding: 48px 20px 80px; }
+
+  header { margin-bottom: 36px; }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .sub { color: var(--ink-soft); font-size: 1.05rem; max-width: 58ch; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+
+  .card h2 { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; margin: 0 0 20px; }
+
+  .usage-field { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+
+  .field { margin-bottom: 16px; }
+
+  .field label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 6px; }
+  .field .hint { font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 4px; }
+
+  input[type="number"] {
+    width: 100%;
+    padding: 11px 12px;
+    font-size: 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+  }
+
+  input[type="number"]:focus { outline: 2px solid var(--a); outline-offset: 1px; border-color: var(--a); }
+
+  .plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 600px) { .plans-grid { grid-template-columns: 1fr; } }
+
+  .plan-col h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    margin: 0 0 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid;
+  }
+  .plan-col.a h3 { color: var(--a); border-color: var(--a); }
+  .plan-col.b h3 { color: var(--b); border-color: var(--b); }
+
+  .ledger { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 24px; }
+  .ledger-head { padding: 20px 28px 4px; }
+  .ledger-head .eyebrow { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); font-weight: 600; }
+
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 600px) { .result-grid { grid-template-columns: 1fr; } }
+
+  .col { padding: 18px 24px 22px; border-top: 1px solid var(--border); }
+  .col.a { background: var(--a-bg); }
+  .col.b { background: var(--b-bg); }
+
+  .col-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .col-title strong { font-family: 'Fraunces', serif; font-size: 1.05rem; }
+  .col.a .col-title strong { color: var(--a); }
+  .col.b .col-title strong { color: var(--b); }
+
+  .line {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.88rem;
+    padding: 4px 0;
+    color: var(--ink-soft);
+  }
+
+  .line.total {
+    border-top: 1px dashed var(--border);
+    margin-top: 8px;
+    padding-top: 9px;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 1rem;
+  }
+
+  .verdict {
+    padding: 22px 28px;
+    border-top: 1px solid var(--border);
+    font-size: 1.02rem;
+  }
+  .verdict strong { font-family: 'Fraunces', serif; }
+
+  .crossover {
+    padding: 16px 28px 22px;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    background: var(--warn-bg);
+  }
+  .crossover strong { color: var(--warn); font-family: 'IBM Plex Mono', monospace; }
+
+  section.explain { margin-top: 48px; }
+  section.explain h2 { font-family: 'Fraunces', serif; font-size: 1.4rem; margin: 0 0 14px; }
+  section.explain h3 { font-size: 1.05rem; margin: 24px 0 8px; }
+  section.explain p { color: var(--ink-soft); font-size: 0.98rem; }
+
+  footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 0.82rem; color: var(--ink-soft); }
+  footer a { color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Which plan actually costs less for you?</h1>
+    <p class="sub">Premium alone doesn't tell you the real cost. Compare two plans by total spend, premium plus what you'd actually pay out of pocket, based on how much care you expect to use this year.</p>
+  </header>
+
+  <div class="card">
+    <div class="usage-field">
+      <div class="field" style="margin-bottom:0;">
+        <label for="expectedSpend">Expected total cost of care this year (before insurance)</label>
+        <input type="number" id="expectedSpend" value="5000" min="0" step="100">
+        <div class="hint">A rough estimate is fine. Include routine visits, prescriptions, and anything planned.</div>
+      </div>
+    </div>
+
+    <div class="plans-grid">
+      <div class="plan-col a">
+        <h3>Plan A</h3>
+        <div class="field">
+          <label for="aPremium">Monthly premium</label>
+          <input type="number" id="aPremium" value="350" min="0" step="10">
+        </div>
+        <div class="field">
+          <label for="aDeductible">Annual deductible</label>
+          <input type="number" id="aDeductible" value="1500" min="0" step="50">
+        </div>
+        <div class="field">
+          <label for="aCoinsurance">Coinsurance after deductible (%)</label>
+          <input type="number" id="aCoinsurance" value="20" min="0" max="100" step="1">
+        </div>
+        <div class="field">
+          <label for="aOOPMax">Annual out-of-pocket max</label>
+          <input type="number" id="aOOPMax" value="4000" min="0" step="100">
+        </div>
+        <div class="field checkbox-row" style="margin-bottom:10px;">
+          <input type="checkbox" id="aHSA">
+          <label for="aHSA" style="font-size:0.85rem;">HSA-eligible (HDHP), employer contributes</label>
+        </div>
+        <div class="field" id="aHSAField" style="display:none;">
+          <label for="aEmployerHSA">Employer HSA contribution (annual)</label>
+          <input type="number" id="aEmployerHSA" value="500" min="0" step="50">
+        </div>
+      </div>
+
+      <div class="plan-col b">
+        <h3>Plan B</h3>
+        <div class="field">
+          <label for="bPremium">Monthly premium</label>
+          <input type="number" id="bPremium" value="200" min="0" step="10">
+        </div>
+        <div class="field">
+          <label for="bDeductible">Annual deductible</label>
+          <input type="number" id="bDeductible" value="4000" min="0" step="50">
+        </div>
+        <div class="field">
+          <label for="bCoinsurance">Coinsurance after deductible (%)</label>
+          <input type="number" id="bCoinsurance" value="30" min="0" max="100" step="1">
+        </div>
+        <div class="field">
+          <label for="bOOPMax">Annual out-of-pocket max</label>
+          <input type="number" id="bOOPMax" value="7000" min="0" step="100">
+        </div>
+        <div class="field checkbox-row" style="margin-bottom:10px;">
+          <input type="checkbox" id="bHSA">
+          <label for="bHSA" style="font-size:0.85rem;">HSA-eligible (HDHP), employer contributes</label>
+        </div>
+        <div class="field" id="bHSAField" style="display:none;">
+          <label for="bEmployerHSA">Employer HSA contribution (annual)</label>
+          <input type="number" id="bEmployerHSA" value="0" min="0" step="50">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-head"><div class="eyebrow">Estimated total annual cost, at your expected usage</div></div>
+
+    <div class="result-grid">
+      <div class="col a">
+        <div class="col-title"><strong>Plan A</strong></div>
+        <div class="line"><span>Annual premium</span><span id="aPremiumTotal">—</span></div>
+        <div class="line"><span>Out-of-pocket responsibility</span><span id="aOOPTotal">—</span></div>
+        <div class="line" id="aHSALine" style="display:none;"><span>Employer HSA contribution</span><span id="aHSAAmount">—</span></div>
+        <div class="line total"><span>Total annual cost</span><span id="aGrandTotal">—</span></div>
+      </div>
+      <div class="col b">
+        <div class="col-title"><strong>Plan B</strong></div>
+        <div class="line"><span>Annual premium</span><span id="bPremiumTotal">—</span></div>
+        <div class="line"><span>Out-of-pocket responsibility</span><span id="bOOPTotal">—</span></div>
+        <div class="line" id="bHSALine" style="display:none;"><span>Employer HSA contribution</span><span id="bHSAAmount">—</span></div>
+        <div class="line total"><span>Total annual cost</span><span id="bGrandTotal">—</span></div>
+      </div>
+    </div>
+
+    <div class="verdict" id="verdict"></div>
+    <div class="crossover" id="crossover"></div>
+  </div>
+
+  <section class="explain">
+    <h2>How this is calculated</h2>
+    <p>For each plan: you pay dollar-for-dollar up to the deductible, then a percentage (coinsurance) of costs after that, until you hit the out-of-pocket max, after which the plan covers 100%. Total cost is that out-of-pocket amount plus what you pay in premiums all year.</p>
+
+    <h3>Why the lower premium isn't always cheaper</h3>
+    <p>A lower monthly premium usually comes with a higher deductible and out-of-pocket max. That's a fine trade if you rarely use care. It gets expensive fast if you end up needing more than expected, which is exactly the scenario the crossover point above is showing you.</p>
+
+    <h3>About the employer HSA contribution field</h3>
+    <p>This only counts money your employer puts in on your behalf, since that's free money that directly offsets what a high-deductible plan costs you. It doesn't count your own HSA contributions, that's your own money moving from taxable pay into a tax-advantaged account, not a reduction in the plan's real cost. If you want to see the tax savings from your own contributions, that's a separate question, use the HSA vs FSA calculator for that side of the decision.</p>
+
+    <h3>What this doesn't account for</h3>
+    <p>This models the standard deductible-then-coinsurance-then-max structure used by most PPO and HDHP plans. Plans with flat copays for office visits or prescriptions that don't count toward the deductible work differently, check your plan's summary of benefits if that applies to you. This also doesn't account for network differences or drug formularies, which can matter as much as the raw dollar comparison.</p>
+  </section>
+
+  <footer>
+    <p>This tool provides general estimates and does not constitute insurance, tax, or financial advice. Confirm exact plan terms with your benefits administrator or insurer before enrolling.</p>
+    <p><a href="#">Privacy policy</a></p>
+  </footer>
+
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+
+  function oopFor(spend, deductible, coinsurancePct, oopMax) {
+    const coins = coinsurancePct / 100;
+    let oop;
+    if (spend <= deductible) {
+      oop = spend;
+    } else {
+      oop = deductible + (spend - deductible) * coins;
+    }
+    return Math.min(oop, oopMax);
+  }
+
+  function totalCostFor(spend, premiumMonthly, deductible, coinsurancePct, oopMax, employerHSA) {
+    return (premiumMonthly * 12) + oopFor(spend, deductible, coinsurancePct, oopMax) - (employerHSA || 0);
+  }
+
+  $('aHSA').addEventListener('change', () => { $('aHSAField').style.display = $('aHSA').checked ? 'block' : 'none'; calc(); });
+  $('bHSA').addEventListener('change', () => { $('bHSAField').style.display = $('bHSA').checked ? 'block' : 'none'; calc(); });
+
+  function calc() {
+    const spend = Math.max(0, parseFloat($('expectedSpend').value) || 0);
+
+    const aPremium = Math.max(0, parseFloat($('aPremium').value) || 0);
+    const aDed = Math.max(0, parseFloat($('aDeductible').value) || 0);
+    const aCoins = Math.max(0, parseFloat($('aCoinsurance').value) || 0);
+    const aMax = Math.max(0, parseFloat($('aOOPMax').value) || 0);
+    const aHSAOn = $('aHSA').checked;
+    const aEmployerHSA = aHSAOn ? Math.max(0, parseFloat($('aEmployerHSA').value) || 0) : 0;
+
+    const bPremium = Math.max(0, parseFloat($('bPremium').value) || 0);
+    const bDed = Math.max(0, parseFloat($('bDeductible').value) || 0);
+    const bCoins = Math.max(0, parseFloat($('bCoinsurance').value) || 0);
+    const bMax = Math.max(0, parseFloat($('bOOPMax').value) || 0);
+    const bHSAOn = $('bHSA').checked;
+    const bEmployerHSA = bHSAOn ? Math.max(0, parseFloat($('bEmployerHSA').value) || 0) : 0;
+
+    const aOOP = oopFor(spend, aDed, aCoins, aMax);
+    const bOOP = oopFor(spend, bDed, bCoins, bMax);
+    const aTotal = aPremium * 12 + aOOP - aEmployerHSA;
+    const bTotal = bPremium * 12 + bOOP - bEmployerHSA;
+
+    $('aPremiumTotal').textContent = fmt(aPremium * 12);
+    $('aOOPTotal').textContent = fmt(aOOP);
+    $('aHSALine').style.display = aHSAOn ? 'flex' : 'none';
+    $('aHSAAmount').textContent = '-' + fmt(aEmployerHSA);
+    $('aGrandTotal').textContent = fmt(aTotal);
+
+    $('bPremiumTotal').textContent = fmt(bPremium * 12);
+    $('bOOPTotal').textContent = fmt(bOOP);
+    $('bHSALine').style.display = bHSAOn ? 'flex' : 'none';
+    $('bHSAAmount').textContent = '-' + fmt(bEmployerHSA);
+    $('bGrandTotal').textContent = fmt(bTotal);
+
+    const verdictEl = $('verdict');
+    const diff = Math.abs(aTotal - bTotal);
+    if (aTotal < bTotal) {
+      verdictEl.innerHTML = '<strong>Plan A costs less</strong> at this usage level, by ' + fmt(diff) + ' a year.';
+    } else if (bTotal < aTotal) {
+      verdictEl.innerHTML = '<strong>Plan B costs less</strong> at this usage level, by ' + fmt(diff) + ' a year.';
+    } else {
+      verdictEl.innerHTML = '<strong>Both plans cost about the same</strong> at this usage level.';
+    }
+
+    // Numeric crossover search across a spend range
+    const maxSpend = 100000;
+    const step = 250;
+    let crossoverSpend = null;
+    let prevDiff = totalCostFor(0, aPremium, aDed, aCoins, aMax, aEmployerHSA) - totalCostFor(0, bPremium, bDed, bCoins, bMax, bEmployerHSA);
+    for (let x = step; x <= maxSpend; x += step) {
+      const d = totalCostFor(x, aPremium, aDed, aCoins, aMax, aEmployerHSA) - totalCostFor(x, bPremium, bDed, bCoins, bMax, bEmployerHSA);
+      if ((prevDiff <= 0 && d > 0) || (prevDiff >= 0 && d < 0)) {
+        crossoverSpend = x;
+        break;
+      }
+      prevDiff = d;
+    }
+
+    const crossoverEl = $('crossover');
+    const cheaperAtZero = totalCostFor(0, aPremium, aDed, aCoins, aMax, aEmployerHSA) < totalCostFor(0, bPremium, bDed, bCoins, bMax, bEmployerHSA) ? 'A' : 'B';
+    const otherPlan = cheaperAtZero === 'A' ? 'B' : 'A';
+    if (crossoverSpend) {
+      crossoverEl.innerHTML = 'Plan ' + cheaperAtZero + ' is cheaper at low usage. If your actual care costs end up above <strong>' + fmt(crossoverSpend) + '</strong> for the year, Plan ' + otherPlan + ' becomes the better deal instead. Worth knowing if your estimate above is uncertain.';
+    } else {
+      crossoverEl.innerHTML = 'Plan ' + cheaperAtZero + ' stays cheaper across the full range of realistic usage, up to $' + maxSpend.toLocaleString('en-US') + ' in annual care costs.';
+    }
+  }
+
+  document.querySelectorAll('input').forEach(el => el.addEventListener('input', calc));
+  calc();
+</script>
+
+</body>
+</html>

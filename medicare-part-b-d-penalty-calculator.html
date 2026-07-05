@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medicare Part B & D Late Enrollment Penalty Calculator 2026</title>
+<meta name="description" content="Estimate your Medicare Part B and Part D late enrollment penalties for 2026, including what they add up to over the years since they last for as long as you're enrolled.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #F9FAF8;
+    --panel: #FFFFFF;
+    --ink: #14232E;
+    --ink-soft: #4A5A63;
+    --border: #DDE2E1;
+    --a: #1F6F5C;
+    --a-bg: #E7F2EF;
+    --b: #6B4C9A;
+    --b-bg: #F0EBF7;
+    --warn: #A6551D;
+    --warn-bg: #FBEEE3;
+    --danger: #A6321D;
+    --danger-bg: #FBE7E3;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 800px; margin: 0 auto; padding: 48px 20px 80px; }
+
+  header { margin-bottom: 36px; }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .sub { color: var(--ink-soft); font-size: 1.05rem; max-width: 58ch; }
+
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin-bottom: 24px; }
+  .card h2 { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; margin: 0 0 20px; }
+
+  .plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 600px) { .plans-grid { grid-template-columns: 1fr; } }
+
+  .plan-col h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    margin: 0 0 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid;
+  }
+  .plan-col.a h3 { color: var(--a); border-color: var(--a); }
+  .plan-col.b h3 { color: var(--b); border-color: var(--b); }
+
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 6px; }
+  .field .hint { font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 4px; }
+
+  .checkbox-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 16px; }
+  .checkbox-row input { margin-top: 3px; }
+  .checkbox-row label { font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+
+  input[type="number"] {
+    width: 100%;
+    padding: 11px 12px;
+    font-size: 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  input[type="number"]:focus, input[type="checkbox"]:focus-visible { outline: 2px solid var(--a); outline-offset: 1px; border-color: var(--a); }
+
+  .ledger { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 24px; }
+  .ledger-head { padding: 20px 28px 4px; }
+  .ledger-head .eyebrow { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); font-weight: 600; }
+
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 600px) { .result-grid { grid-template-columns: 1fr; } }
+
+  .col { padding: 18px 24px 22px; border-top: 1px solid var(--border); }
+  .col.a { background: var(--a-bg); }
+  .col.b { background: var(--b-bg); }
+
+  .col-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .col-title strong { font-family: 'Fraunces', serif; font-size: 1.05rem; }
+  .col.a .col-title strong { color: var(--a); }
+  .col.b .col-title strong { color: var(--b); }
+
+  .line { display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 0.88rem; padding: 4px 0; color: var(--ink-soft); }
+  .line.total { border-top: 1px dashed var(--border); margin-top: 8px; padding-top: 9px; font-weight: 700; color: var(--ink); font-size: 1rem; }
+
+  .lifetime {
+    padding: 20px 28px 26px;
+    border-top: 1px solid var(--border);
+    background: var(--danger-bg);
+  }
+  .lifetime h3 { font-family: 'Fraunces', serif; color: var(--danger); margin: 0 0 10px; font-size: 1.1rem; }
+  .lifetime .field { margin-bottom: 14px; }
+  .lifetime .bignum { font-family: 'IBM Plex Mono', monospace; font-size: 1.6rem; font-weight: 700; color: var(--danger); }
+
+  section.explain { margin-top: 48px; }
+  section.explain h2 { font-family: 'Fraunces', serif; font-size: 1.4rem; margin: 0 0 14px; }
+  section.explain h3 { font-size: 1.05rem; margin: 24px 0 8px; }
+  section.explain p { color: var(--ink-soft); font-size: 0.98rem; }
+
+  footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 0.82rem; color: var(--ink-soft); }
+  footer a { color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>What will your Medicare late enrollment penalty cost you?</h1>
+    <p class="sub">These penalties aren't one-time fees. Once assessed, they're added to your premium for as long as you're enrolled, which for most people means the rest of their life.</p>
+  </header>
+
+  <div class="card">
+    <div class="plans-grid">
+      <div class="plan-col a">
+        <h3>Part B</h3>
+        <div class="field">
+          <label for="bMonths">Months eligible but not enrolled (no employer coverage or other valid delay)</label>
+          <input type="number" id="bMonths" value="0" min="0" step="1">
+          <div class="hint">Penalty is 10% of the standard premium per each full 12-month period late.</div>
+        </div>
+      </div>
+
+      <div class="plan-col b">
+        <h3>Part D</h3>
+        <div class="field">
+          <label for="dMonths">Full months without creditable drug coverage after eligibility</label>
+          <input type="number" id="dMonths" value="0" min="0" step="1">
+          <div class="hint">Penalty is 1% of the national base beneficiary premium per month.</div>
+        </div>
+        <div class="field">
+          <label for="dPlanPremium">Your Part D plan's monthly premium</label>
+          <input type="number" id="dPlanPremium" value="35" min="0" step="1">
+          <div class="hint">Varies by plan, check your plan's documents.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-head"><div class="eyebrow">Estimated 2026 monthly cost</div></div>
+
+    <div class="result-grid">
+      <div class="col a">
+        <div class="col-title"><strong>Part B</strong></div>
+        <div class="line"><span>Standard premium</span><span id="bStandard">—</span></div>
+        <div class="line"><span>Penalty (<span id="bPenaltyPct">0</span>%)</span><span id="bPenaltyAmt">—</span></div>
+        <div class="line total"><span>Your monthly premium</span><span id="bTotal">—</span></div>
+      </div>
+      <div class="col b">
+        <div class="col-title"><strong>Part D</strong></div>
+        <div class="line"><span>Your plan's premium</span><span id="dPlan">—</span></div>
+        <div class="line"><span>Penalty</span><span id="dPenaltyAmt">—</span></div>
+        <div class="line total"><span>Your monthly premium</span><span id="dTotal">—</span></div>
+      </div>
+    </div>
+
+    <div class="lifetime">
+      <h3>What this adds up to over time</h3>
+      <div class="field">
+        <label for="years">Years you expect to stay enrolled</label>
+        <input type="number" id="years" value="20" min="1" step="1">
+        <div class="hint">Both penalties are permanent for as long as you keep that coverage, this isn't a one-time charge.</div>
+      </div>
+      <div class="line"><span>Combined penalty cost over that time</span><span class="bignum" id="lifetimeCost">—</span></div>
+    </div>
+  </div>
+
+  <section class="explain">
+    <h2>How this is calculated</h2>
+    <p>Part B: for every full 12-month period you were eligible for Part B but didn't enroll, without qualifying employer coverage, add 10% of the standard premium, permanently. Part D: for every full month you went without creditable drug coverage after your initial enrollment window closed, add 1% of the national base beneficiary premium, rounded to the nearest ten cents, permanently.</p>
+
+    <h3>When the penalty doesn't apply</h3>
+    <p>If you or your spouse had qualifying coverage through current employment, generally a large enough employer plan, you can usually delay enrollment penalty-free and sign up during a Special Enrollment Period once that coverage ends. This calculator assumes you've already confirmed you don't qualify for that exception. If you're not sure, that's the first thing to check before treating this number as final.</p>
+
+    <h3>Why the "lifetime" framing matters</h3>
+    <p>A $20/month penalty sounds small. Over 20 years that's roughly $4,800, and Part B premiums also rise most years, so the real total is usually higher than a flat multiplication suggests. Treat the number above as a floor, not a ceiling.</p>
+
+    <h3>What this doesn't account for</h3>
+    <p>This doesn't model IRMAA income-related surcharges, which are separate from and stack on top of any late enrollment penalty. It also assumes the standard premium and base beneficiary premium stay flat across your selected years, when in practice they've increased most years historically. Confirm your specific situation with Medicare or a licensed advisor before making enrollment decisions based on this estimate.</p>
+  </section>
+
+  <footer>
+    <p>This tool provides general estimates based on 2026 Medicare penalty formulas and does not constitute legal, tax, or insurance advice. Confirm your specific enrollment history and options with Medicare or your plan administrator.</p>
+    <p><a href="#">Privacy policy</a></p>
+  </footer>
+
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+  const fmt2 = n => '$' + n.toFixed(2);
+
+  const PART_B_STANDARD = 202.90;
+  const PART_D_BASE = 38.99;
+
+  function calc() {
+    const bMonths = Math.max(0, parseInt($('bMonths').value) || 0);
+    const dMonths = Math.max(0, parseInt($('dMonths').value) || 0);
+    const dPlanPremium = Math.max(0, parseFloat($('dPlanPremium').value) || 0);
+    const years = Math.max(1, parseInt($('years').value) || 1);
+
+    const bFullPeriods = Math.floor(bMonths / 12);
+    const bPenaltyPct = bFullPeriods * 10;
+    const bPenaltyAmt = PART_B_STANDARD * (bPenaltyPct / 100);
+    const bTotal = PART_B_STANDARD + bPenaltyAmt;
+
+    const dPenaltyRaw = PART_D_BASE * 0.01 * dMonths;
+    const dPenaltyAmt = Math.round(dPenaltyRaw * 10) / 10;
+    const dTotal = dPlanPremium + dPenaltyAmt;
+
+    $('bStandard').textContent = fmt(PART_B_STANDARD) + '/mo';
+    $('bPenaltyPct').textContent = bPenaltyPct;
+    $('bPenaltyAmt').textContent = fmt2(bPenaltyAmt) + '/mo';
+    $('bTotal').textContent = fmt2(bTotal) + '/mo';
+
+    $('dPlan').textContent = fmt(dPlanPremium) + '/mo';
+    $('dPenaltyAmt').textContent = fmt2(dPenaltyAmt) + '/mo';
+    $('dTotal').textContent = fmt2(dTotal) + '/mo';
+
+    const lifetimeTotal = (bPenaltyAmt + dPenaltyAmt) * 12 * years;
+    $('lifetimeCost').textContent = fmt(lifetimeTotal);
+  }
+
+  document.querySelectorAll('input').forEach(el => el.addEventListener('input', calc));
+  calc();
+</script>
+
+</body>
+</html>
