@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mid-Year Health Plan Switch Calculator 2026 — Is It Worth It?</title>
+<meta name="description" content="Switching health plans mid-year resets your deductible and out-of-pocket max. See whether the new premium actually saves you money once that reset is factored in.">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6054690102277779" crossorigin="anonymous"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #F9FAF8;
+    --panel: #FFFFFF;
+    --ink: #14232E;
+    --ink-soft: #4A5A63;
+    --border: #DDE2E1;
+    --a: #1F6F5C;
+    --a-bg: #E7F2EF;
+    --b: #6B4C9A;
+    --b-bg: #F0EBF7;
+    --warn: #A6551D;
+    --warn-bg: #FBEEE3;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 800px; margin: 0 auto; padding: 48px 20px 80px; }
+
+  .site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .site-nav a { color: var(--ink-soft); text-decoration: none; }
+  .site-nav a:hover { color: var(--a); }
+  .site-nav .brand-link { color: var(--a); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+  .site-nav .sep { color: var(--border); }
+
+  header { margin-bottom: 36px; }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .sub { color: var(--ink-soft); font-size: 1.05rem; max-width: 58ch; }
+
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin-bottom: 24px; }
+  .card h2 { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; margin: 0 0 20px; }
+
+  .usage-field { margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 6px; }
+  .field .hint { font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 4px; }
+
+  input[type="number"] {
+    width: 100%;
+    padding: 11px 12px;
+    font-size: 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  input[type="number"]:focus { outline: 2px solid var(--a); outline-offset: 1px; border-color: var(--a); }
+
+  .plans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 600px) { .plans-grid { grid-template-columns: 1fr; } }
+
+  .plan-col h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    margin: 0 0 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid;
+  }
+  .plan-col.a h3 { color: var(--a); border-color: var(--a); }
+  .plan-col.b h3 { color: var(--b); border-color: var(--b); }
+
+  .ledger { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 24px; }
+  .ledger-head { padding: 20px 28px 4px; }
+  .ledger-head .eyebrow { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); font-weight: 600; }
+
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 600px) { .result-grid { grid-template-columns: 1fr; } }
+
+  .col { padding: 18px 24px 22px; border-top: 1px solid var(--border); }
+  .col.a { background: var(--a-bg); }
+  .col.b { background: var(--b-bg); }
+
+  .col-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .col-title strong { font-family: 'Fraunces', serif; font-size: 1.05rem; }
+  .col.a .col-title strong { color: var(--a); }
+  .col.b .col-title strong { color: var(--b); }
+
+  .line { display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 0.88rem; padding: 4px 0; color: var(--ink-soft); }
+  .line.total { border-top: 1px dashed var(--border); margin-top: 8px; padding-top: 9px; font-weight: 700; color: var(--ink); font-size: 1rem; }
+
+  .verdict { padding: 22px 28px; border-top: 1px solid var(--border); font-size: 1.02rem; }
+  .verdict strong { font-family: 'Fraunces', serif; }
+
+  .warn { background: var(--warn-bg); border: 1px solid #E8CBB0; color: var(--warn); border-radius: 10px; padding: 12px 16px; font-size: 0.88rem; margin-top: 12px; font-weight: 500; }
+
+  section.explain { margin-top: 48px; }
+  section.explain h2 { font-family: 'Fraunces', serif; font-size: 1.4rem; margin: 0 0 14px; }
+  section.explain h3 { font-size: 1.05rem; margin: 24px 0 8px; }
+  section.explain p { color: var(--ink-soft); font-size: 0.98rem; }
+
+  footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 0.82rem; color: var(--ink-soft); }
+  footer a { color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="site-nav">
+  <a href="index.html" class="brand-link">PlanMath</a>
+  <span class="sep">|</span>
+  <a href="hsa-vs-fsa-calculator.html">HSA vs FSA</a>
+  <a href="cobra-cost-estimator.html">COBRA cost estimator</a>
+  <a href="health-plan-cost-comparison.html">Plan comparison</a>
+  <a href="medicare-part-b-d-penalty-calculator.html">Medicare penalty calculator</a>
+</nav>
+
+  <header>
+    <h1>Is switching plans mid-year actually worth it?</h1>
+    <p class="sub">A lower premium sounds like an easy win, until you remember your deductible and out-of-pocket max reset to zero on the new plan. See the real remaining-year cost before you decide.</p>
+  </header>
+
+  <div class="card">
+    <div class="usage-field">
+      <div class="field" style="margin-bottom:0;">
+        <label for="monthsLeft">Months remaining in the year</label>
+        <input type="number" id="monthsLeft" value="6" min="1" max="12" step="1">
+      </div>
+    </div>
+    <div class="field">
+      <label for="expectedSpend">Expected additional cost of care for the rest of the year</label>
+      <input type="number" id="expectedSpend" value="3000" min="0" step="100">
+      <div class="hint">A rough estimate is fine. Only include costs from today forward.</div>
+    </div>
+
+    <div class="plans-grid">
+      <div class="plan-col a">
+        <h3>Stay put</h3>
+        <div class="field">
+          <label for="aPremium">Monthly premium</label>
+          <input type="number" id="aPremium" value="350" min="0" step="10">
+        </div>
+        <div class="field">
+          <label for="aDeductible">Plan's full annual deductible</label>
+          <input type="number" id="aDeductible" value="2000" min="0" step="50">
+        </div>
+        <div class="field">
+          <label for="aMetDeductible">Deductible you've already met this year</label>
+          <input type="number" id="aMetDeductible" value="1200" min="0" step="50">
+        </div>
+        <div class="field">
+          <label for="aCoinsurance">Coinsurance after deductible (%)</label>
+          <input type="number" id="aCoinsurance" value="20" min="0" max="100" step="1">
+        </div>
+        <div class="field">
+          <label for="aOOPMax">Plan's full annual OOP max</label>
+          <input type="number" id="aOOPMax" value="5000" min="0" step="100">
+        </div>
+        <div class="field">
+          <label for="aMetOOP">OOP you've already paid this year</label>
+          <input type="number" id="aMetOOP" value="1200" min="0" step="50">
+        </div>
+      </div>
+
+      <div class="plan-col b">
+        <h3>Switch plans</h3>
+        <div class="field">
+          <label for="bPremium">Monthly premium</label>
+          <input type="number" id="bPremium" value="220" min="0" step="10">
+        </div>
+        <div class="field">
+          <label for="bDeductible">New plan's annual deductible</label>
+          <input type="number" id="bDeductible" value="4000" min="0" step="50">
+        </div>
+        <div class="field">
+          <label for="bCoinsurance">Coinsurance after deductible (%)</label>
+          <input type="number" id="bCoinsurance" value="30" min="0" max="100" step="1">
+        </div>
+        <div class="field">
+          <label for="bOOPMax">New plan's annual OOP max</label>
+          <input type="number" id="bOOPMax" value="7000" min="0" step="100">
+        </div>
+        <div class="hint" style="margin-top:-8px;">Starts at $0 met, that's the whole point of this comparison.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-head"><div class="eyebrow">Estimated cost for the rest of the year</div></div>
+
+    <div class="result-grid">
+      <div class="col a">
+        <div class="col-title"><strong>Stay put</strong></div>
+        <div class="line"><span>Remaining premium</span><span id="aPremiumTotal">—</span></div>
+        <div class="line"><span>Remaining out-of-pocket</span><span id="aOOPTotal">—</span></div>
+        <div class="line total"><span>Total remaining cost</span><span id="aGrandTotal">—</span></div>
+      </div>
+      <div class="col b">
+        <div class="col-title"><strong>Switch plans</strong></div>
+        <div class="line"><span>Remaining premium</span><span id="bPremiumTotal">—</span></div>
+        <div class="line"><span>Remaining out-of-pocket</span><span id="bOOPTotal">—</span></div>
+        <div class="line total"><span>Total remaining cost</span><span id="bGrandTotal">—</span></div>
+      </div>
+    </div>
+
+    <div class="verdict" id="verdict"></div>
+    <div style="padding: 0 28px 22px;"><div class="warn" id="resetWarning"></div></div>
+  </div>
+
+  <!-- Below Results Ad -->
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6054690102277779" data-ad-slot="9334818123" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  <section class="explain">
+    <h2>How this is calculated</h2>
+    <p>Staying put only applies your plan's deductible and out-of-pocket max to whatever amount you haven't already paid this year. Switching plans starts both at zero, no matter how much you've already spent, since a new plan has no record of your prior spending. This tool compares total cost for just the remaining months, not the full year, since the months already behind you cost the same either way.</p>
+
+    <h3>Why "cheaper premium" can still lose</h3>
+    <p>If you've already met a meaningful chunk of your current deductible, staying put means future care is taxed at coinsurance or fully covered sooner. Switching resets that progress, even a small amount of additional care under a fresh deductible can cost more than a few months of a higher premium would have.</p>
+
+    <h3>What this doesn't account for</h3>
+    <p>This assumes your accumulated deductible and out-of-pocket spending don't transfer to the new plan, which is true in the vast majority of cases but not universal, some insurers offer accumulator transfers within the same carrier. Confirm with both plans directly if that might apply to you. This also doesn't model network differences, which can matter as much as the dollar math if your current doctors aren't in the new plan's network.</p>
+  </section>
+
+  <footer>
+    <p>This tool provides general estimates and does not constitute insurance, tax, or financial advice. Confirm exact plan terms with your benefits administrator or insurer before switching.</p>
+    <p><a href="privacy.html">Privacy policy</a></p>
+  </footer>
+
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+
+  function oopRemaining(spend, fullDeductible, metDeductible, coinsurancePct, fullOOPMax, metOOP) {
+    const remainingDeductible = Math.max(0, fullDeductible - metDeductible);
+    const remainingOOPMax = Math.max(0, fullOOPMax - metOOP);
+    const coins = coinsurancePct / 100;
+    let oop;
+    if (spend <= remainingDeductible) {
+      oop = spend;
+    } else {
+      oop = remainingDeductible + (spend - remainingDeductible) * coins;
+    }
+    return Math.min(oop, remainingOOPMax);
+  }
+
+  function calc() {
+    const monthsLeft = Math.max(1, Math.min(12, parseInt($('monthsLeft').value) || 1));
+    const spend = Math.max(0, parseFloat($('expectedSpend').value) || 0);
+
+    const aPremium = Math.max(0, parseFloat($('aPremium').value) || 0);
+    const aDed = Math.max(0, parseFloat($('aDeductible').value) || 0);
+    const aMetDed = Math.max(0, parseFloat($('aMetDeductible').value) || 0);
+    const aCoins = Math.max(0, parseFloat($('aCoinsurance').value) || 0);
+    const aMax = Math.max(0, parseFloat($('aOOPMax').value) || 0);
+    const aMetOOP = Math.max(0, parseFloat($('aMetOOP').value) || 0);
+
+    const bPremium = Math.max(0, parseFloat($('bPremium').value) || 0);
+    const bDed = Math.max(0, parseFloat($('bDeductible').value) || 0);
+    const bCoins = Math.max(0, parseFloat($('bCoinsurance').value) || 0);
+    const bMax = Math.max(0, parseFloat($('bOOPMax').value) || 0);
+
+    const aOOP = oopRemaining(spend, aDed, aMetDed, aCoins, aMax, aMetOOP);
+    const bOOP = oopRemaining(spend, bDed, 0, bCoins, bMax, 0);
+
+    const aPremiumTotal = aPremium * monthsLeft;
+    const bPremiumTotal = bPremium * monthsLeft;
+
+    const aTotal = aPremiumTotal + aOOP;
+    const bTotal = bPremiumTotal + bOOP;
+
+    $('aPremiumTotal').textContent = fmt(aPremiumTotal);
+    $('aOOPTotal').textContent = fmt(aOOP);
+    $('aGrandTotal').textContent = fmt(aTotal);
+
+    $('bPremiumTotal').textContent = fmt(bPremiumTotal);
+    $('bOOPTotal').textContent = fmt(bOOP);
+    $('bGrandTotal').textContent = fmt(bTotal);
+
+    const verdictEl = $('verdict');
+    const diff = Math.abs(aTotal - bTotal);
+    if (aTotal < bTotal) {
+      verdictEl.innerHTML = '<strong>Staying put costs less</strong> for the rest of the year, by ' + fmt(diff) + '.';
+    } else if (bTotal < aTotal) {
+      verdictEl.innerHTML = '<strong>Switching costs less</strong> for the rest of the year, by ' + fmt(diff) + ', even after the deductible reset.';
+    } else {
+      verdictEl.innerHTML = '<strong>Both options cost about the same</strong> for the rest of the year.';
+    }
+
+    const resetWarning = $('resetWarning');
+    if (aMetDed > 0 || aMetOOP > 0) {
+      resetWarning.style.display = 'block';
+      resetWarning.textContent = 'Switching means giving up the ' + fmt(Math.max(aMetDed, aMetOOP)) + ' in progress you\'ve already made toward this year\'s deductible and out-of-pocket max on your current plan. That's already factored into the numbers above.';
+    } else {
+      resetWarning.style.display = 'none';
+    }
+  }
+
+  document.querySelectorAll('input').forEach(el => el.addEventListener('input', calc));
+  calc();
+</script>
+
+</body>
+</html>
