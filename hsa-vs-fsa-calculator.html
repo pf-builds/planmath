@@ -276,10 +276,33 @@
   }
 
   footer a { color: var(--ink-soft); }
+
+  .site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .site-nav a { color: var(--ink-soft); text-decoration: none; }
+  .site-nav a:hover { color: var(--hsa); }
+  .site-nav .brand-link { color: var(--hsa); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+  .site-nav .sep { color: var(--border); }
 </style>
 </head>
 <body>
 <div class="wrap">
+<nav class="site-nav">
+  <a href="index.html" class="brand-link">PlanMath</a>
+  <span class="sep">|</span>
+  <a href="cobra-cost-estimator.html">COBRA cost estimator</a>
+  <a href="health-plan-cost-comparison.html">Plan comparison</a>
+  <a href="medicare-part-b-d-penalty-calculator.html">Medicare penalty calculator</a>
+</nav>
 
   <header>
     <h1>HSA or FSA: which actually keeps more of your money?</h1>
