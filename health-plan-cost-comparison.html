@@ -164,6 +164,19 @@
   .site-nav a:hover { color: var(--a); }
   .site-nav .brand-link { color: var(--a); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
   .site-nav .sep { color: var(--border); }
+
+  .tools-dropdown { position: relative; }
+  .tools-dropdown summary { cursor: pointer; color: var(--ink-soft); list-style: none; }
+  .tools-dropdown summary::-webkit-details-marker { display: none; }
+  .tools-dropdown summary:hover { color: #1F6F5C; }
+  .tools-menu {
+    position: absolute; top: 100%; left: 0; margin-top: 8px;
+    background: #FFFFFF; border: 1px solid #DDE2E1; border-radius: 10px;
+    padding: 8px; display: flex; flex-direction: column; min-width: 230px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08); z-index: 10;
+  }
+  .tools-menu a { padding: 8px 10px; border-radius: 6px; color: #14232E; text-decoration: none; font-size: 0.82rem; }
+  .tools-menu a:hover { background: #E7F2EF; }
 </style>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6054690102277779" crossorigin="anonymous"></script>
 </head>
@@ -171,11 +184,17 @@
 <div class="wrap">
 <nav class="site-nav">
   <a href="index.html" class="brand-link">PlanMath</a>
-  <span class="sep">|</span>
-  <a href="hsa-vs-fsa-calculator.html">HSA vs FSA</a>
-  <a href="cobra-cost-estimator.html">COBRA cost estimator</a>
-  <a href="medicare-part-b-d-penalty-calculator.html">Medicare penalty calculator</a>
-  <a href="mid-year-plan-switch-calculator.html">Mid-year plan switch</a>
+  <details class="tools-dropdown">
+    <summary>All calculators &#9662;</summary>
+    <div class="tools-menu">
+      <a href="hsa-vs-fsa-calculator.html">HSA vs FSA</a>
+      <a href="cobra-cost-estimator.html">COBRA cost estimator</a>
+      <a href="health-plan-cost-comparison.html">Plan comparison</a>
+      <a href="medicare-part-b-d-penalty-calculator.html">Medicare penalty calculator</a>
+      <a href="mid-year-plan-switch-calculator.html">Mid-year plan switch</a>
+      <a href="irmaa-surcharge-calculator.html">IRMAA surcharge calculator</a>
+    </div>
+  </details>
 </nav>
 
   <header>

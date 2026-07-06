@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IRMAA Surcharge Calculator 2026 — What Your Income Adds to Medicare</title>
+<meta name="description" content="Estimate your 2026 IRMAA surcharge on Medicare Part B and Part D based on your 2024 income, and see why crossing a bracket by even $1 changes the whole bill.">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6054690102277779" crossorigin="anonymous"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #F9FAF8;
+    --panel: #FFFFFF;
+    --ink: #14232E;
+    --ink-soft: #4A5A63;
+    --border: #DDE2E1;
+    --a: #1F6F5C;
+    --a-bg: #E7F2EF;
+    --warn: #A6551D;
+    --warn-bg: #FBEEE3;
+    --danger: #A6321D;
+    --danger-bg: #FBE7E3;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 800px; margin: 0 auto; padding: 48px 20px 80px; }
+
+  .site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .site-nav .brand-link { color: var(--a); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; text-decoration: none; }
+
+  .tools-dropdown { position: relative; }
+  .tools-dropdown summary { cursor: pointer; color: var(--ink-soft); list-style: none; }
+  .tools-dropdown summary::-webkit-details-marker { display: none; }
+  .tools-dropdown summary:hover { color: #1F6F5C; }
+  .tools-menu {
+    position: absolute; top: 100%; left: 0; margin-top: 8px;
+    background: #FFFFFF; border: 1px solid #DDE2E1; border-radius: 10px;
+    padding: 8px; display: flex; flex-direction: column; min-width: 230px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08); z-index: 10;
+  }
+  .tools-menu a { padding: 8px 10px; border-radius: 6px; color: #14232E; text-decoration: none; font-size: 0.82rem; }
+  .tools-menu a:hover { background: #E7F2EF; }
+
+  header { margin-bottom: 36px; }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .sub { color: var(--ink-soft); font-size: 1.05rem; max-width: 58ch; }
+
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin-bottom: 24px; }
+  .card h2 { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; margin: 0 0 20px; }
+
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 0.88rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 6px; }
+  .field .hint { font-size: 0.8rem; color: var(--ink-soft); font-weight: 400; margin-top: 4px; }
+
+  input[type="number"], select {
+    width: 100%;
+    padding: 11px 12px;
+    font-size: 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  input[type="number"]:focus, select:focus { outline: 2px solid var(--a); outline-offset: 1px; border-color: var(--a); }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 520px) { .row2 { grid-template-columns: 1fr; } }
+
+  .ledger { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 24px; }
+  .ledger-head { padding: 20px 28px 4px; }
+  .ledger-head .eyebrow { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); font-weight: 600; }
+
+  .col { padding: 18px 28px 24px; border-top: 1px solid var(--border); background: var(--a-bg); }
+  .col-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .col-title strong { font-family: 'Fraunces', serif; font-size: 1.15rem; color: var(--a); }
+
+  .line { display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 0.92rem; padding: 5px 0; color: var(--ink-soft); }
+  .line.total { border-top: 1px dashed var(--border); margin-top: 8px; padding-top: 10px; font-weight: 700; color: var(--ink); font-size: 1.05rem; }
+
+  .cliff-warn {
+    background: var(--danger-bg); border: 1px solid #E8C0B0; color: var(--danger);
+    border-radius: 10px; padding: 14px 16px; font-size: 0.92rem; margin-top: 14px; font-weight: 500;
+  }
+  .cliff-warn strong { font-family: 'IBM Plex Mono', monospace; }
+
+  section.explain { margin-top: 48px; }
+  section.explain h2 { font-family: 'Fraunces', serif; font-size: 1.4rem; margin: 0 0 14px; }
+  section.explain h3 { font-size: 1.05rem; margin: 24px 0 8px; }
+  section.explain p { color: var(--ink-soft); font-size: 0.98rem; }
+
+  .limits-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.86rem; }
+  .limits-table th, .limits-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  .limits-table th { font-weight: 600; color: var(--ink-soft); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 0.82rem; color: var(--ink-soft); }
+  footer a { color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="site-nav">
+  <a href="index.html" class="brand-link">PlanMath</a>
+  <details class="tools-dropdown">
+    <summary>All calculators &#9662;</summary>
+    <div class="tools-menu">
+      <a href="hsa-vs-fsa-calculator.html">HSA vs FSA</a>
+      <a href="cobra-cost-estimator.html">COBRA cost estimator</a>
+      <a href="health-plan-cost-comparison.html">Plan comparison</a>
+      <a href="medicare-part-b-d-penalty-calculator.html">Medicare penalty calculator</a>
+      <a href="mid-year-plan-switch-calculator.html">Mid-year plan switch</a>
+      <a href="irmaa-surcharge-calculator.html">IRMAA surcharge calculator</a>
+    </div>
+  </details>
+</nav>
+
+  <header>
+    <h1>What does your income add to Medicare?</h1>
+    <p class="sub">IRMAA isn't a penalty for a mistake, it's a surcharge based on income from two years ago. Enter your 2024 income to see your 2026 Part B and Part D cost.</p>
+  </header>
+
+  <div class="card">
+    <h2>Your 2024 income (used for 2026 premiums)</h2>
+    <div class="row2">
+      <div class="field">
+        <label for="magi">Modified adjusted gross income (MAGI)</label>
+        <input type="number" id="magi" value="120000" min="0" step="1000">
+        <div class="hint">Line 11 of Form 1040, plus tax-exempt interest.</div>
+      </div>
+      <div class="field">
+        <label for="filingStatus">Filing status</label>
+        <select id="filingStatus">
+          <option value="single">Single or married filing separately</option>
+          <option value="joint">Married filing jointly</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label for="hasPartD">Do you have a Medicare Part D plan (standalone or through Medicare Advantage)?</label>
+      <select id="hasPartD">
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-head"><div class="eyebrow">Estimated 2026 monthly premium</div></div>
+    <div class="col">
+      <div class="col-title"><strong>Your bracket: <span id="bracketLabel">—</span></strong></div>
+      <div class="line"><span>Part B standard premium</span><span id="partBStandard">—</span></div>
+      <div class="line"><span>Part B IRMAA surcharge</span><span id="partBSurcharge">—</span></div>
+      <div class="line total"><span>Your total Part B premium</span><span id="partBTotal">—</span></div>
+      <div class="line" id="partDSurchargeLine" style="margin-top:14px;"><span>Part D IRMAA surcharge (added to your plan premium)</span><span id="partDSurcharge">—</span></div>
+      <div class="cliff-warn" id="cliffWarning"></div>
+    </div>
+  </div>
+
+  <!-- Below Results Ad -->
+  <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6054690102277779" data-ad-slot="9334818123" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+  <section class="explain">
+    <h2>2026 IRMAA brackets (based on 2024 income)</h2>
+    <table class="limits-table">
+      <tr><th>Single MAGI</th><th>Joint MAGI</th><th>Part B total</th><th>Part D surcharge</th></tr>
+      <tr><td>$109,000 or less</td><td>$218,000 or less</td><td>$202.90</td><td>$0</td></tr>
+      <tr><td>$109,001 – $137,000</td><td>$218,001 – $274,000</td><td>$284.10</td><td>$14.50</td></tr>
+      <tr><td>$137,001 – $171,000</td><td>$274,001 – $342,000</td><td>$405.90</td><td>$37.30</td></tr>
+      <tr><td>$171,001 – $205,000</td><td>$342,001 – $410,000</td><td>$527.70</td><td>$60.10</td></tr>
+      <tr><td>$205,001 – $500,000</td><td>$410,001 – $750,000</td><td>$649.50</td><td>$82.90</td></tr>
+      <tr><td>Over $500,000</td><td>Over $750,000</td><td>$689.90</td><td>$91.00</td></tr>
+    </table>
+
+    <h3>Why this is a cliff, not a slope</h3>
+    <p>IRMAA doesn't work like income tax brackets. Once your MAGI crosses a threshold, the full surcharge for that tier applies to your entire premium, not just the amount above the line. Someone at $137,001 pays the same surcharge as someone at $170,000, and someone at $136,999 pays a meaningfully lower one. One dollar can be the difference between tiers.</p>
+
+    <h3>The two-year lookback</h3>
+    <p>Your 2026 premium is based on your 2024 tax return, the most recent one the IRS has on file. This means income moves you make today, a Roth conversion, a large capital gain, selling a home, won't affect your premium until two years later. It also means a bad surprise now might reflect a year that no longer represents your actual finances.</p>
+
+    <h3>If your income has dropped since then</h3>
+    <p>If you've had a qualifying life-changing event, retirement, divorce, death of a spouse, loss of income, you can file Form SSA-44 to ask Social Security to use a more recent year instead of the two-year-old figure. This is genuinely underused. If your circumstances changed and this applies to you, it's worth filing rather than assuming the number above is final.</p>
+
+    <h3>What this doesn't account for</h3>
+    <p>This estimates your bracket based on the figures above but doesn't calculate your MAGI for you, that requires your actual tax return. It also doesn't model Part D surcharges for immunosuppressive-drug-only coverage, which follow a separate schedule. Confirm your exact situation with the Social Security Administration or a tax professional before making income decisions based on this estimate.</p>
+  </section>
+
+  <footer>
+    <p>This tool provides general estimates based on 2026 CMS and SSA published IRMAA brackets and does not constitute tax, legal, or financial advice.</p>
+    <p><a href="privacy.html">Privacy policy</a></p>
+  </footer>
+
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const fmt = n => '$' + n.toFixed(2);
+
+  const BRACKETS = [
+    { single: 0,       joint: 0,       partB: 202.90, partD: 0,     label: 'No surcharge' },
+    { single: 109001,  joint: 218001,  partB: 284.10, partD: 14.50, label: 'Tier 1' },
+    { single: 137001,  joint: 274001,  partB: 405.90, partD: 37.30, label: 'Tier 2' },
+    { single: 171001,  joint: 342001,  partB: 527.70, partD: 60.10, label: 'Tier 3' },
+    { single: 205001,  joint: 410001,  partB: 649.50, partD: 82.90, label: 'Tier 4' },
+    { single: 500001,  joint: 750001,  partB: 689.90, partD: 91.00, label: 'Tier 5' }
+  ];
+
+  function calc() {
+    const magi = Math.max(0, parseFloat($('magi').value) || 0);
+    const filingStatus = $('filingStatus').value;
+    const hasPartD = $('hasPartD').value === 'yes';
+
+    let bracket = BRACKETS[0];
+    for (const b of BRACKETS) {
+      const threshold = filingStatus === 'joint' ? b.joint : b.single;
+      if (magi >= threshold) bracket = b;
+    }
+
+    const standard = 202.90;
+    const surcharge = bracket.partB - standard;
+
+    $('bracketLabel').textContent = bracket.label;
+    $('partBStandard').textContent = fmt(standard) + '/mo';
+    $('partBSurcharge').textContent = fmt(surcharge) + '/mo';
+    $('partBTotal').textContent = fmt(bracket.partB) + '/mo';
+
+    const partDLine = $('partDSurchargeLine');
+    if (hasPartD) {
+      partDLine.style.display = 'flex';
+      $('partDSurcharge').textContent = fmt(bracket.partD) + '/mo';
+    } else {
+      partDLine.style.display = 'none';
+    }
+
+    const cliffWarning = $('cliffWarning');
+    const nextBracketIndex = BRACKETS.indexOf(bracket) + 1;
+    if (nextBracketIndex < BRACKETS.length) {
+      const nextThreshold = filingStatus === 'joint' ? BRACKETS[nextBracketIndex].joint : BRACKETS[nextBracketIndex].single;
+      const distance = nextThreshold - magi;
+      if (distance > 0 && distance <= 15000) {
+        cliffWarning.style.display = 'block';
+        cliffWarning.innerHTML = 'You\'re within <strong>' + fmt(distance).replace('.00','') + '</strong> of the next bracket. Crossing it would raise your Part B premium to <strong>' + fmt(BRACKETS[nextBracketIndex].partB) + '/mo</strong>, not a prorated amount, the full jump.';
+      } else {
+        cliffWarning.style.display = 'none';
+      }
+    } else {
+      cliffWarning.style.display = 'none';
+    }
+  }
+
+  document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', calc));
+  calc();
+</script>
+
+</body>
+</html>
