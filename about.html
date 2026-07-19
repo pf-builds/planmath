@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About PlanMath — Who Built This and Why</title>
+<meta name="description" content="Why PlanMath exists, who built it, and how the calculators are kept accurate. Plain-language background on the site behind the tools.">
+<link rel="canonical" href="https://pf-builds.github.io/planmath/about.html">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #F9FAF8;
+    --panel: #FFFFFF;
+    --ink: #14232E;
+    --ink-soft: #4A5A63;
+    --border: #DDE2E1;
+    --a: #1F6F5C;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 700px; margin: 0 auto; padding: 56px 20px 80px; }
+
+  a { color: var(--a); }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(1.8rem, 4vw, 2.3rem);
+    margin: 0 0 8px;
+  }
+
+  .updated { color: var(--ink-soft); font-size: 0.88rem; margin-bottom: 40px; }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    margin: 32px 0 10px;
+  }
+
+  p, li { color: var(--ink-soft); font-size: 0.98rem; }
+
+  ul { padding-left: 20px; }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>About PlanMath</h1>
+  <p class="updated">Last updated: July 2026</p>
+
+  <p>PlanMath is built and maintained by one person who works in healthcare benefits administration, the field that produces the plan documents, COBRA notices, and Medicare enrollment rules these calculators are based on. It's a side project, not a company or a licensed advisory practice.</p>
+
+  <h2>Why this exists</h2>
+  <p>Most health benefits decisions get made with incomplete numbers, a premium here, a deductible there, no clear total. The formulas behind these calculators are the same kind of math used to evaluate real plan costs day to day. The goal is to put a version of that math in front of anyone who needs to make one of these decisions, without a login or a sales pitch attached to it.</p>
+
+  <h2>What qualifies, and what doesn't</h2>
+  <p>Day-to-day work with benefits administration is where the numbers and rules on this site come from. That isn't a substitute for a law, tax, or financial license, and nothing on this site is legal, tax, or financial advice. Every calculator says plainly what it doesn't account for. Treat the results as a planning estimate and confirm specifics with your plan administrator, a tax professional, or Medicare directly before making a final decision.</p>
+
+  <h2>How the numbers are kept current</h2>
+  <p>Contribution limits, premium figures, and IRMAA brackets are updated to the published federal and CMS figures for the current year. If a figure on this site looks out of date, that's worth flagging, see the contact note below.</p>
+
+  <h2>How this is funded</h2>
+  <p>PlanMath is free to use and supported by ads. No calculator input is ever sent anywhere. See the <a href="privacy.html">privacy policy</a> for the full detail on what the site does and doesn't collect.</p>
+
+  <h2>Contact</h2>
+  <p>Questions or corrections can be sent to the contact listed on the site's GitHub repository.</p>
+
+  <footer>
+    <p><a href="index.html">← Back to PlanMath</a></p>
+  </footer>
+
+</div>
+</body>
+</html>

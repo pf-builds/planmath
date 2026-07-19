@@ -5,6 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Health Plan Cost Comparison 2026 — Premium + Out-of-Pocket, Side by Side</title>
 <meta name="description" content="Compare two health plans by total real cost, premium plus deductible, coinsurance, and out-of-pocket max, based on how much care you actually expect to use.">
+<link rel="canonical" href="https://pf-builds.github.io/planmath/health-plan-cost-comparison.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to compare two health plans by total cost",
+  "step": [
+    { "@type": "HowToStep", "name": "Enter expected cost of care", "text": "Enter your expected total cost of care for the year, before insurance." },
+    { "@type": "HowToStep", "name": "Enter Plan A's details", "text": "Enter Plan A's monthly premium, annual deductible, coinsurance after deductible, and annual out-of-pocket max." },
+    { "@type": "HowToStep", "name": "Add Plan A's employer HSA contribution", "text": "If Plan A is HSA-eligible, enter the employer HSA contribution." },
+    { "@type": "HowToStep", "name": "Enter Plan B's details", "text": "Enter Plan B's monthly premium, annual deductible, coinsurance after deductible, and annual out-of-pocket max." },
+    { "@type": "HowToStep", "name": "Add Plan B's employer HSA contribution", "text": "If Plan B is HSA-eligible, enter the employer HSA contribution." }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why isn't a lower premium always cheaper?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A lower monthly premium usually comes with a higher deductible and out-of-pocket max. That's a fine trade if you rarely use care. It gets expensive fast if you end up needing more than expected, which is exactly what a crossover point shows you."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does the employer HSA contribution field account for?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "This only counts money your employer puts in on your behalf, since that's free money that directly offsets what a high-deductible plan costs you. It doesn't count your own HSA contributions, that's your own money moving from taxable pay into a tax-advantaged account, not a reduction in the plan's real cost."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What doesn't this health plan comparison account for?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "This models the standard deductible-then-coinsurance-then-max structure used by most PPO and HDHP plans. Plans with flat copays for office visits or prescriptions that don't count toward the deductible work differently. This also doesn't account for network differences or drug formularies, which can matter as much as the raw dollar comparison."
+      }
+    }
+  ]
+}
+</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
 
@@ -314,7 +361,7 @@
 
   <footer>
     <p>This tool provides general estimates and does not constitute insurance, tax, or financial advice. Confirm exact plan terms with your benefits administrator or insurer before enrolling.</p>
-    <p><a href="privacy.html">Privacy policy</a></p>
+    <p><a href="about.html">About</a> &middot; <a href="privacy.html">Privacy policy</a></p>
   </footer>
 
 </div>
