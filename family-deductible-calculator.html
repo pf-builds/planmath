@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Deductible &amp; Out-of-Pocket Calculator — Embedded vs Aggregate</title>
+<meta name="description" content="See what each family member pays on a family health plan, what the whole household pays, and exactly when the family deductible and out-of-pocket cap kick in. Compare embedded and aggregate plan structures side by side.">
+<link rel="canonical" href="https://pf-builds.github.io/planmath/family-deductible-calculator.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to calculate what a family pays on a family health plan",
+  "step": [
+    { "@type": "HowToStep", "name": "Choose the plan structure", "text": "Pick embedded (each member has their own deductible and out-of-pocket max under the family caps) or aggregate (no individual caps, only the family ones)." },
+    { "@type": "HowToStep", "name": "Enter the plan's caps", "text": "Enter the individual and family deductible, the coinsurance percentage, and the individual and family out-of-pocket maximums." },
+    { "@type": "HowToStep", "name": "Add household members", "text": "Add each person in the household, up to six." },
+    { "@type": "HowToStep", "name": "Add expected expenses", "text": "For each member, add expected care with the month it happens, whether it is standard care, a flat copay, or preventive care, and the amount." },
+    { "@type": "HowToStep", "name": "Read the year in order", "text": "Review the chronological ledger to see how each bill split, which caps were hit, and in what month." }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the difference between an embedded and an aggregate family deductible?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "On an embedded plan, each family member has their own individual deductible and out-of-pocket max, and the family caps sit on top, so no single person ever pays more than the individual amount. On an aggregate plan there are no individual caps at all. The entire family deductible has to be met, in any combination across members, before coinsurance starts for anyone, and the family out-of-pocket max is the only ceiling. Aggregate is common on high-deductible health plans."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does one family member have to meet the whole family deductible?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "On an embedded plan, no. Each person stops at their own individual deductible, and everyone's payments also add up toward the family deductible. Once the family total reaches the family deductible, no one pays deductible for the rest of the year, even members who never met their own. On an aggregate plan a single member can end up meeting the entire family deductible alone, because there is no individual cap to stop them."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is coinsurance a second insurance?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Coinsurance is your share of one bill, not a second policy. Once your deductible is met, each bill splits between you and the plan by a fixed percentage, for example you pay 20% and the plan pays 80%, and it keeps splitting that way until you reach your out-of-pocket max."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does this family deductible calculator not account for?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It does not include premiums, which are a flat monthly cost that applies the same way under either structure. It models the standard deductible then coinsurance then out-of-pocket max structure, so it does not handle separate prescription deductibles, out-of-network cost sharing with its own caps, or services excluded from the out-of-pocket max. It also assumes every expense is in network."
+      }
+    }
+  ]
+}
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #F9FAF8;
+    --panel: #FFFFFF;
+    --ink: #14232E;
+    --ink-soft: #4A5A63;
+    --border: #DDE2E1;
+    --a: #1F6F5C;
+    --a-bg: #E7F2EF;
+    --b: #6B4C9A;
+    --b-bg: #F0EBF7;
+    --warn: #A6551D;
+    --warn-bg: #FBEEE3;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 48px 20px 80px; }
+
+  header { margin-bottom: 36px; }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .sub { color: var(--ink-soft); font-size: 1.05rem; max-width: 58ch; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+
+  .card h2 { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; margin: 0 0 6px; }
+  .card .card-sub { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 20px; }
+
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--ink-soft); margin-bottom: 6px; }
+  .field .hint { font-size: 0.78rem; color: var(--ink-soft); font-weight: 400; margin-top: 4px; }
+
+  input[type="number"], input[type="text"], select {
+    width: 100%;
+    padding: 11px 12px;
+    font-size: 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  input[type="text"] { font-family: 'Inter', sans-serif; font-size: 0.92rem; }
+  select { font-family: 'Inter', sans-serif; font-size: 0.88rem; padding: 10px 8px; }
+
+  input:focus, select:focus { outline: 2px solid var(--a); outline-offset: 1px; border-color: var(--a); }
+
+  /* ---------- Presets ---------- */
+  .dense-note {
+    display: none;
+    margin: 18px 0 0;
+    padding: 13px 16px;
+    background: var(--a-bg);
+    border-radius: 10px;
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  @media (max-width: 760px) { .dense-note { display: block; } }
+
+  .preset-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .chip {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 9px 14px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: var(--panel);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+  .chip:hover { border-color: var(--a); color: var(--a); }
+  .chip[aria-pressed="true"] { background: var(--a-bg); border-color: var(--a); color: var(--a); }
+  .preset-note { font-size: 0.88rem; color: var(--ink-soft); margin: 0; }
+
+  /* ---------- Structure toggle ---------- */
+  .struct-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 22px; }
+  @media (max-width: 640px) { .struct-row { grid-template-columns: 1fr; } }
+
+  .struct-opt {
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    background: var(--panel);
+    text-align: left;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .struct-opt:hover { border-color: var(--a); }
+  .struct-opt[aria-pressed="true"] { border-color: var(--a); background: var(--a-bg); }
+  .struct-opt .name { font-weight: 700; font-size: 0.95rem; display: block; margin-bottom: 4px; }
+  .struct-opt[aria-pressed="true"] .name { color: var(--a); }
+  .struct-opt .desc { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.45; display: block; }
+
+  .plan-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 700px) { .plan-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 420px) { .plan-grid { grid-template-columns: 1fr; } }
+
+  .plan-grid .field.dim { opacity: 0.45; }
+
+  /* ---------- Household ---------- */
+  .member {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    background: var(--bg);
+  }
+  .member-head { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+  .member-head input { flex: 1; font-weight: 600; }
+
+  .exp-head {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    display: grid;
+    grid-template-columns: 96px 132px 1fr 116px 34px;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  @media (max-width: 700px) { .exp-head { display: none; } }
+
+  .exp-row {
+    display: grid;
+    grid-template-columns: 96px 132px 1fr 116px 34px;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .exp-row select, .exp-row input { padding: 8px 10px; font-size: 0.88rem; }
+
+  @media (max-width: 700px) {
+    .exp-row {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: "month type" "label label" "amount remove";
+      gap: 8px;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      border-bottom: 1px dashed var(--border);
+    }
+    .exp-row .f-month { grid-area: month; }
+    .exp-row .f-type { grid-area: type; }
+    .exp-row .f-label { grid-area: label; }
+    .exp-row .f-amount { grid-area: amount; }
+    .exp-row .f-remove { grid-area: remove; justify-self: end; }
+  }
+
+  .btn-x {
+    border: 1.5px solid var(--border);
+    background: var(--panel);
+    color: var(--ink-soft);
+    border-radius: 8px;
+    width: 34px; height: 34px;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-x:hover { border-color: var(--warn); color: var(--warn); }
+  @media (max-width: 700px) { .btn-x { width: auto; padding: 0 14px; height: 36px; } }
+
+  .btn-ghost {
+    border: 1.5px dashed var(--border);
+    background: transparent;
+    color: var(--a);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+  }
+  .btn-ghost:hover { border-color: var(--a); background: var(--a-bg); }
+
+  .household-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+
+  /* ---------- Results ---------- */
+  .ledger { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 24px; }
+  .ledger-head { padding: 20px 28px 10px; }
+  .ledger-head .eyebrow { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); font-weight: 600; }
+
+  .totals { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 600px) { .totals { grid-template-columns: 1fr; } }
+
+  .tot { padding: 18px 24px 20px; border-top: 1px solid var(--border); }
+  .tot.you { background: var(--b-bg); }
+  .tot.plan { background: var(--a-bg); }
+  .tot .lab { font-size: 0.8rem; color: var(--ink-soft); font-weight: 600; margin-bottom: 4px; }
+  .tot .num { font-family: 'IBM Plex Mono', monospace; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; }
+  .tot.you .num { color: var(--b); }
+  .tot.plan .num { color: var(--a); }
+
+  .meters { padding: 20px 28px 22px; border-top: 1px solid var(--border); }
+  .meter-block { margin-bottom: 16px; }
+  .meter-block:last-child { margin-bottom: 0; }
+  .meter-lab {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .meter-lab .met { color: var(--a); font-weight: 700; }
+  .meter { height: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+  .meter-fill { height: 100%; background: var(--b); border-radius: 999px; transition: width 0.25s ease; }
+  .meter-fill.oop { background: var(--a); }
+
+  .contrast {
+    padding: 18px 28px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--warn-bg);
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+  .contrast .k {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--warn); font-weight: 700; display: block; margin-bottom: 6px;
+  }
+  .contrast strong { color: var(--warn); font-family: 'IBM Plex Mono', monospace; }
+  .contrast b { color: var(--ink); }
+
+  .table-scroll { overflow-x: auto; border-top: 1px solid var(--border); }
+  table.members { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 560px; }
+  table.members th {
+    text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--ink-soft); font-family: 'IBM Plex Mono', monospace; font-weight: 600;
+    padding: 14px 16px 8px; border-bottom: 1px solid var(--border);
+  }
+  table.members td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.members tr:last-child td { border-bottom: none; }
+  table.members td.num { font-family: 'IBM Plex Mono', monospace; }
+  table.members td.you { font-family: 'IBM Plex Mono', monospace; font-weight: 700; color: var(--b); }
+  .cap-cell { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: var(--ink-soft); }
+  .cap-cell .when { color: var(--a); font-weight: 700; }
+  .minibar { height: 4px; background: var(--bg); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; margin-top: 5px; width: 108px; }
+  .minibar > i { display: block; height: 100%; background: var(--b); }
+  .minibar.oop > i { background: var(--a); }
+
+  /* ---------- Event ledger ---------- */
+  .events { border-top: 1px solid var(--border); padding: 8px 0 4px; }
+  .ev { padding: 12px 28px; border-bottom: 1px solid var(--border); }
+  .ev:last-child { border-bottom: none; }
+  .ev-top { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; }
+  .ev-when {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; text-transform: uppercase;
+    letter-spacing: 0.07em; color: var(--a); font-weight: 700; min-width: 132px;
+  }
+  .ev-what { font-size: 0.92rem; font-weight: 600; flex: 1; }
+  .ev-billed { font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; color: var(--ink-soft); }
+  .ev-break { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tag {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem;
+    padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border); color: var(--ink-soft);
+  }
+  .tag.ded { border-color: var(--b); color: var(--b); }
+  .tag.co { border-color: var(--b); color: var(--b); background: var(--b-bg); }
+  .tag.pay { background: var(--b); border-color: var(--b); color: #fff; font-weight: 600; }
+  .tag.plan { background: var(--a-bg); border-color: var(--a); color: var(--a); }
+  .ev-note { font-size: 0.82rem; color: var(--ink-soft); margin-top: 7px; }
+
+  .milestone {
+    padding: 14px 28px;
+    background: var(--a-bg);
+    border-bottom: 1px solid var(--border);
+    display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline;
+  }
+  .milestone .pill {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; text-transform: uppercase;
+    letter-spacing: 0.07em; font-weight: 700; color: #fff; background: var(--a);
+    padding: 3px 10px; border-radius: 999px;
+  }
+  .milestone .what { font-size: 0.88rem; color: var(--ink); }
+
+  .empty { padding: 28px; color: var(--ink-soft); font-size: 0.92rem; }
+
+  /* ---------- Tooltips ---------- */
+  .term {
+    border-bottom: 1px dotted var(--a);
+    cursor: help;
+    position: relative;
+    color: inherit;
+    font-weight: 600;
+  }
+  .term .tip {
+    position: absolute;
+    bottom: calc(100% + 9px);
+    left: 0;
+    width: min(272px, 76vw);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 13px;
+    border-radius: 9px;
+    font-size: 0.79rem;
+    line-height: 1.5;
+    font-weight: 400;
+    z-index: 30;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.12s ease;
+    box-shadow: 0 6px 20px rgba(20,35,46,0.18);
+  }
+  .term:hover .tip, .term:focus .tip, .term:focus-within .tip { opacity: 1; visibility: visible; }
+  .term:focus { outline: 2px solid var(--a); outline-offset: 2px; border-radius: 2px; }
+  @media (max-width: 620px) { .term .tip { left: auto; right: 0; } }
+
+  /* ---------- Explainer ---------- */
+  section.explain { margin-top: 48px; }
+  section.explain h2 { font-family: 'Fraunces', serif; font-size: 1.4rem; margin: 0 0 14px; }
+  section.explain h3 { font-size: 1.05rem; margin: 24px 0 8px; }
+  section.explain p { color: var(--ink-soft); font-size: 0.98rem; }
+
+  details.glossary {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 24px;
+    margin-bottom: 24px;
+  }
+  details.glossary summary {
+    cursor: pointer;
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    list-style: none;
+  }
+  details.glossary summary::-webkit-details-marker { display: none; }
+  details.glossary summary::after { content: ' ▾'; color: var(--a); font-family: 'Inter', sans-serif; }
+  details.glossary[open] summary::after { content: ' ▴'; }
+  details.glossary dl { margin: 18px 0 0; }
+  details.glossary dt {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; font-weight: 700;
+    color: var(--a); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 16px;
+  }
+  details.glossary dt:first-child { margin-top: 0; }
+  details.glossary dd { margin: 5px 0 0; color: var(--ink-soft); font-size: 0.94rem; }
+
+  .myth {
+    background: var(--warn-bg);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin: 18px 0 0;
+  }
+  .myth .k {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--warn); font-weight: 700; display: block; margin-bottom: 6px;
+  }
+  .myth p { margin: 0; font-size: 0.94rem; color: var(--ink); }
+  .split-bar { display: flex; height: 30px; border-radius: 8px; overflow: hidden; margin: 14px 0 10px; }
+  .split-bar > span {
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: #fff; font-weight: 600;
+  }
+  .split-bar .you { background: var(--b); width: 20%; }
+  .split-bar .plan { background: var(--a); width: 80%; }
+
+  footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 0.82rem; color: var(--ink-soft); }
+  footer a { color: var(--ink-soft); }
+
+  .site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .site-nav a { color: var(--ink-soft); text-decoration: none; }
+  .site-nav a:hover { color: var(--a); }
+  .site-nav .brand-link { color: var(--a); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+  .site-nav .sep { color: var(--border); }
+
+  .tools-dropdown { position: relative; }
+  .tools-dropdown summary { cursor: pointer; color: var(--ink-soft); list-style: none; }
+  .tools-dropdown summary::-webkit-details-marker { display: none; }
+  .tools-dropdown summary:hover { color: #1F6F5C; }
+  .tools-menu {
+    position: absolute; top: 100%; left: 0; margin-top: 8px;
+    background: #FFFFFF; border: 1px solid #DDE2E1; border-radius: 10px;
+    padding: 8px; display: flex; flex-direction: column; min-width: 230px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08); z-index: 10;
+  }
+  .tools-menu a { padding: 8px 10px; border-radius: 6px; color: #14232E; text-decoration: none; font-size: 0.82rem; }
+  .tools-menu a:hover { background: #E7F2EF; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6054690102277779" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="wrap">
+<nav class="site-nav">
+  <a href="index.html" class="brand-link">PlanMath</a>
+  <details class="tools-dropdown">
+    <summary>All calculators &#9662;</summary>
+    <div class="tools-menu">
+      <a href="hsa-vs-fsa-calculator.html">HSA vs FSA</a>
+      <a href="cobra-cost-estimator.html">COBRA cost estimator</a>
+      <a href="health-plan-cost-comparison.html">Plan comparison</a>
+      <a href="family-deductible-calculator.html">Family deductible calculator</a>
+      <a href="medicare-part-b-d-penalty-calculator.html">Medicare penalty calculator</a>
+      <a href="mid-year-plan-switch-calculator.html">Mid-year plan switch</a>
+      <a href="irmaa-surcharge-calculator.html">IRMAA surcharge calculator</a>
+    </div>
+  </details>
+</nav>
+
+  <header>
+    <h1 id="pageTitle">On a family plan, who pays what?</h1>
+    <p class="sub" id="pageSub">A family plan stacks a second layer on top of the usual deductible and out-of-pocket max. Put in a year of expected care for each person and watch where the money actually lands, which caps get hit, and in what month. Then flip the plan structure and watch the same year cost something different.</p>
+    <p class="dense-note" data-mode="family">This is one of the densest topics in health insurance, and this page shows a lot at once. On a phone, load a scenario below and scroll through the results. On a wider screen you can see the whole year in one view.</p>
+  </header>
+
+  <div class="card">
+    <h2>Who's on the plan?</h2>
+    <p class="card-sub">The math is the same either way. A family plan just adds a second set of caps on top.</p>
+    <div class="struct-row">
+      <button type="button" class="struct-opt mode-opt" data-mode="individual" aria-pressed="false">
+        <span class="name">Just me</span>
+        <span class="desc">One person, one year. Your deductible, your coinsurance, your out-of-pocket max, and nothing else in the way.</span>
+      </button>
+      <button type="button" class="struct-opt mode-opt" data-mode="family" aria-pressed="true">
+        <span class="name">My family</span>
+        <span class="desc">Two or more people, with family caps sitting on top of everyone's individual ones.</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Start from a scenario</h2>
+    <p class="card-sub">Load an example year, then change anything you like. Every number below is editable.</p>
+    <div class="preset-row" id="presetRow"></div>
+    <p class="preset-note" id="presetNote"></p>
+  </div>
+
+  <div class="card">
+    <h2>The plan</h2>
+    <p class="card-sub">Illustrative default values. Replace them with your own plan's numbers.</p>
+
+    <div id="structWrap">
+      <div class="struct-row">
+        <button type="button" class="struct-opt" data-struct="embedded" aria-pressed="true">
+          <span class="name">Embedded</span>
+          <span class="desc">Everyone has their own deductible and out-of-pocket max, with the family caps on top. No one person ever pays more than the individual amount.</span>
+        </button>
+        <button type="button" class="struct-opt" data-struct="aggregate" aria-pressed="false">
+          <span class="name">Aggregate (non-embedded)</span>
+          <span class="desc">No individual caps at all. The whole family deductible has to be met before coinsurance starts for anyone. Common on high-deductible plans.</span>
+        </button>
+      </div>
+    </div>
+    <p class="preset-note" id="soloNote" style="display:none;">One person in the household, so the family caps and the plan structure make no difference. Add a second member to compare embedded against aggregate.</p>
+
+    <div class="plan-grid">
+      <div class="field" id="f-indDed">
+        <label for="indDed">Individual deductible</label>
+        <input type="number" id="indDed" value="2000" min="0" step="50">
+      </div>
+      <div class="field" id="f-famDed">
+        <label for="famDed">Family deductible</label>
+        <input type="number" id="famDed" value="4000" min="0" step="50">
+      </div>
+      <div class="field">
+        <label for="coins">Coinsurance after deductible (%)</label>
+        <input type="number" id="coins" value="20" min="0" max="100" step="1">
+      </div>
+      <div class="field" id="f-indOOP">
+        <label for="indOOP">Individual out-of-pocket max</label>
+        <input type="number" id="indOOP" value="6000" min="0" step="100">
+      </div>
+      <div class="field" id="f-famOOP">
+        <label for="famOOP">Family out-of-pocket max</label>
+        <input type="number" id="famOOP" value="12000" min="0" step="100">
+      </div>
+    </div>
+    <p class="preset-note" id="aggNote" style="display:none;">Aggregate plans have no individual caps, so the individual deductible and individual out-of-pocket max are ignored in this calculation.</p>
+  </div>
+
+  <div class="card">
+    <h2 id="householdTitle">The household and their year</h2>
+    <p class="card-sub" id="householdSub">Add each person, then the care you expect them to need and the month it happens. Month matters: family caps fill up in the order care actually happens.</p>
+    <div id="household"></div>
+    <div class="household-actions">
+      <button type="button" class="btn-ghost" id="addMember">+ Add household member</button>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <div class="ledger-head"><div class="eyebrow" id="resultEyebrow">The year, under an embedded plan</div></div>
+
+    <div class="totals">
+      <div class="tot">
+        <div class="lab">Total care billed</div>
+        <div class="num" id="tBilled">—</div>
+      </div>
+      <div class="tot you">
+        <div class="lab" id="paidLabel">Your family paid</div>
+        <div class="num" id="tPaid">—</div>
+      </div>
+      <div class="tot plan">
+        <div class="lab">The plan paid</div>
+        <div class="num" id="tPlan">—</div>
+      </div>
+    </div>
+
+    <div class="meters">
+      <div class="meter-block">
+        <div class="meter-lab"><span id="dedMeterName">Family deductible</span><span id="dedLab">—</span></div>
+        <div class="meter"><div class="meter-fill" id="dedFill" style="width:0%"></div></div>
+      </div>
+      <div class="meter-block">
+        <div class="meter-lab"><span id="oopMeterName">Family out-of-pocket max</span><span id="oopLab">—</span></div>
+        <div class="meter"><div class="meter-fill oop" id="oopFill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="contrast" id="contrast"></div>
+
+    <div class="table-scroll" id="memberTable">
+      <table class="members">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Care billed</th>
+            <th>They paid</th>
+            <th>Deductible</th>
+            <th>Out-of-pocket</th>
+          </tr>
+        </thead>
+        <tbody id="memberRows"></tbody>
+      </table>
+    </div>
+
+    <div class="events" id="events"></div>
+  </div>
+
+  <!-- Below Results Ad -->
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6054690102277779" data-ad-slot="9334818123" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+<details class="glossary" open>
+  <summary>Every term on this page, in plain language</summary>
+  <dl>
+    <dt>Deductible</dt>
+    <dd>The amount you pay yourself each year before your plan starts sharing the cost of care.</dd>
+
+    <dt>Coinsurance</dt>
+    <dd>Your fixed percentage share of a bill after the deductible is met. Here you pay 20%, the plan pays 80%. It's automatic, not a fee you choose.</dd>
+
+    <dt>Copay</dt>
+    <dd>A flat fee for a specific service (like $50 for a prescription), separate from the deductible.</dd>
+
+    <dt>Out-of-pocket max</dt>
+    <dd>Your yearly ceiling. Once your payments add up to this, the plan pays 100% for the rest of the year.</dd>
+
+    <dt>Preventive care</dt>
+    <dd>Routine care like checkups and screenings, covered 100% before the deductible applies.</dd>
+
+    <dt>Subscriber and dependents</dt>
+    <dd>The subscriber is the person the plan is issued to, usually through their job. Everyone else covered under it is a dependent, which can mean a spouse or partner, a child, or anyone else the plan allows. On this page they're all just people with their own expected care.</dd>
+
+    <dt>Family deductible</dt>
+    <dd>The most your household pays in deductible across everyone combined. Once the family total reaches it, nobody pays deductible for the rest of the year, even a member who never met their own.</dd>
+
+    <dt>Family out-of-pocket max</dt>
+    <dd>Your household's yearly ceiling across everyone. Once combined payments reach it, the plan pays 100% for every member for the rest of the year.</dd>
+
+    <dt>Embedded plan</dt>
+    <dd>Each person has their own individual deductible and out-of-pocket max, and the family caps sit on top. A single high-cost member stops at their individual cap, and the family cap catches the aggregate.</dd>
+
+    <dt>Aggregate (non-embedded) plan</dt>
+    <dd>There are no individual caps. The whole family deductible has to be met, in any combination across members, before coinsurance starts for anyone, and the family out-of-pocket max is the only ceiling. Common on high-deductible plans.</dd>
+  </dl>
+
+  <div class="myth">
+    <span class="k">The one that trips people up</span>
+    <p><strong>Coinsurance is not a second insurance.</strong> It's your share of one bill. On a $1,000 bill after your deductible, at 20% coinsurance:</p>
+    <div class="split-bar">
+      <span class="you">$200 · you</span>
+      <span class="plan">$800 · plan</span>
+    </div>
+    <p>Once your deductible's met, every bill splits this way until you reach your out-of-pocket max.</p>
+  </div>
+</details>
+
+<section class="explain">
+    <h2>How this is calculated</h2>
+    <p data-mode="individual">Expenses are processed in month order, because that's how a real plan year works. Each standard expense runs the usual path: you pay dollar-for-dollar until your deductible is met, then coinsurance on the rest, until your out-of-pocket max stops you and the plan covers 100%. Copays are a flat fee that skips the deductible but still counts toward the out-of-pocket max. Preventive care is covered in full and counts toward nothing.</p>
+    <p data-mode="family">Expenses are processed in month order, because that's how a real plan year works. A family cap doesn't care who spends the money, only that the household total reached it, so the order care happens in decides who benefits. Each standard expense runs the usual path: you pay dollar-for-dollar until a deductible is met, then coinsurance on the rest, until an out-of-pocket max stops you and the plan covers 100%. Copays are a flat fee that skips the deductible but still counts toward the out-of-pocket max. Preventive care is covered in full and counts toward nothing.</p>
+
+    <div data-mode="family">
+      <h3>The difference between the two plan structures</h3>
+      <p>On an embedded plan, two limits apply to every bill at once: the member's own remaining deductible, and the family's remaining deductible, whichever is smaller. The same is true of the out-of-pocket max. That's why a single sick member on an embedded plan stops at the individual amount, no matter how large their bills get. On an aggregate plan there is no individual limit in the way, so one member can meet the entire family deductible alone and keep paying right up to the family out-of-pocket max. Same family, same care, different bill.</p>
+    </div>
+
+    <div data-mode="individual">
+      <h3>What changes when someone else joins your plan</h3>
+      <p>Everything above still applies to you personally, and a second set of caps appears on top: a family deductible and a family out-of-pocket max that everyone's payments count toward together. The consequence people miss is that you can stop paying a deductible because of someone else's bills, without ever meeting your own. Switch to family mode above to see that happen, and to compare the two ways plans handle it.</p>
+    </div>
+
+    <h3>Why the month on each expense matters</h3>
+    <p data-mode="individual">For one person the yearly total usually lands in the same place no matter what order the bills arrive in. What the month changes is <em>when</em> your costs stop. If you're going to hit your out-of-pocket max in August, everything after that is covered in full, which is worth knowing before you decide whether to schedule something this year or wait until January when the whole thing resets to zero.</p>
+    <p data-mode="family">Say the family deductible is met in May. Anyone who gets care in June skips the deductible entirely and goes straight to coinsurance, even if they'd never had a claim all year. Move that same care to March and they'd have paid a deductible first. That timing effect is invisible if you just add up the year's spending, which is exactly why this calculator walks the year in order instead.</p>
+
+    <div data-mode="family">
+      <h3>A note on copays and high-deductible plans</h3>
+      <p>This calculator applies copays the same way under both structures, so that flipping the toggle changes one thing and one thing only, the plan structure. Worth knowing in real life: aggregate deductibles usually appear on high-deductible health plans, and those generally can't offer flat copays before the deductible is met, apart from preventive care. On a real HDHP your prescriptions would most likely run through the deductible instead.</p>
+    </div>
+
+    <h3>What this doesn't account for</h3>
+    <p data-mode="individual">Premiums aren't included, since they're a flat monthly cost that doesn't interact with any of this. If you're weighing premium against out-of-pocket exposure, the <a href="health-plan-cost-comparison.html">plan cost comparison calculator</a> handles that side. This also assumes every expense is in network, that the plan uses a single deductible rather than a separate one for prescriptions, and that every dollar you pay counts toward the out-of-pocket max. Check your plan's summary of benefits for which of those hold.</p>
+    <p data-mode="family">Premiums aren't included, since they're a flat monthly cost that lands the same way under either structure. If you're weighing premium against out-of-pocket exposure, the <a href="health-plan-cost-comparison.html">plan cost comparison calculator</a> handles that side. This also assumes every expense is in network, that the plan uses a single deductible rather than a separate one for prescriptions, and that every dollar you pay counts toward the out-of-pocket max. Check your plan's summary of benefits for which of those hold, and confirm whether your family deductible is embedded or aggregate, since that one word changes the answer more than anything else on this page.</p>
+
+    <h3>New to how any of this works?</h3>
+    <p>If deductibles and coinsurance are still fuzzy, it's easier to watch it happen to one person first. <a href="https://pf-builds.github.io/planpath/">PlanPath walks a single member through one plan year</a>, event by event, then hands you back here for the family version.</p>
+  </section>
+
+  <footer>
+    <p>Illustrative example. Amounts are simplified to explain how a plan works, not a quote or a specific policy. This tool provides general estimates and does not constitute insurance, tax, or financial advice. Confirm exact plan terms with your benefits administrator or insurer before enrolling.</p>
+    <p><a href="about.html">About</a> &middot; <a href="privacy.html">Privacy policy</a></p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (n) { return '$' + Math.round(n).toLocaleString('en-US'); };
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var TYPES = [
+    { v: 'standard', label: 'Standard' },
+    { v: 'copay', label: 'Flat copay' },
+    { v: 'preventive', label: 'Preventive' }
+  ];
+
+  // ---------------------------------------------------------------- state
+  var plan = { structure: 'embedded', indDed: 2000, famDed: 4000, coins: 20, indOOP: 6000, famOOP: 12000 };
+  var members = [];
+  var activePreset = null;
+  var mode = 'family';
+  var stash = { family: null, individual: null };
+
+  // ---------------------------------------------------------------- presets
+  // The individual scenarios reuse the exact plan year from the PlanPath
+  // explainer, so a reader arriving from there sees the same numbers.
+  var INDIVIDUAL_PRESETS = [
+    {
+      id: 'quiet',
+      label: 'A quiet year',
+      note: 'A checkup, one prescription, one minor visit. You never get near your deductible, let alone your out-of-pocket max.',
+      members: [{ name: 'You', expenses: [
+        { month: 2, type: 'preventive', label: 'Annual checkup', amount: 250 },
+        { month: 5, type: 'copay', label: 'Antibiotic prescription', amount: 20 },
+        { month: 11, type: 'standard', label: 'Minor clinic visit', amount: 180 }
+      ] }]
+    },
+    {
+      id: 'procedure',
+      label: 'One big procedure',
+      note: 'The same year the PlanPath explainer walks through. A free checkup, a prescription copay, an urgent care visit that fills the deductible in March, then a procedure in September that runs you into your out-of-pocket max.',
+      members: [{ name: 'You', expenses: [
+        { month: 1, type: 'preventive', label: 'Annual checkup', amount: 250 },
+        { month: 2, type: 'copay', label: 'Prescription', amount: 50 },
+        { month: 3, type: 'standard', label: 'Urgent care visit', amount: 3000 },
+        { month: 9, type: 'standard', label: 'Procedure', amount: 22000 }
+      ] }]
+    },
+    {
+      id: 'scripts-solo',
+      label: 'Ongoing prescriptions',
+      note: 'A monthly copay all year plus one specialist visit. Watch the deductible meter sit nearly still while the out-of-pocket meter climbs steadily, because copays count toward one and not the other.',
+      members: [{ name: 'You', expenses: (function () {
+        var e = [
+          { month: 2, type: 'preventive', label: 'Annual checkup', amount: 250 },
+          { month: 8, type: 'standard', label: 'Specialist visit', amount: 400 }
+        ];
+        for (var m = 1; m <= 12; m++) e.push({ month: m, type: 'copay', label: 'Monthly prescription', amount: 65 });
+        return e;
+      })() }]
+    },
+    {
+      id: 'chronic',
+      label: 'A chronic condition all year',
+      note: 'Monthly treatment from January on. Your deductible is gone in the first month, your out-of-pocket max arrives in August, and every appointment after that costs you nothing.',
+      members: [{ name: 'You', expenses: (function () {
+        var e = [{ month: 1, type: 'preventive', label: 'Annual checkup', amount: 250 }];
+        for (var m = 1; m <= 12; m++) e.push({ month: m, type: 'standard', label: 'Specialist visit and treatment', amount: 3000 });
+        return e;
+      })() }]
+    }
+  ];
+
+  var FAMILY_PRESETS = [
+    {
+      id: 'healthy',
+      label: 'Everyone stays healthy',
+      note: 'A quiet year. Checkups, one clinic visit, a couple of prescriptions. Nothing gets close to a cap, and the plan structure makes no difference at all.',
+      members: [
+        { name: 'Adult 1', expenses: [
+          { month: 2, type: 'preventive', label: 'Annual checkup', amount: 250 },
+          { month: 11, type: 'standard', label: 'Minor clinic visit', amount: 180 }
+        ] },
+        { name: 'Adult 2', expenses: [
+          { month: 3, type: 'preventive', label: 'Annual checkup', amount: 250 },
+          { month: 5, type: 'copay', label: 'Antibiotic prescription', amount: 20 }
+        ] },
+        { name: 'Dependent 1', expenses: [
+          { month: 4, type: 'preventive', label: 'Annual checkup', amount: 200 },
+          { month: 9, type: 'copay', label: 'Strep test visit', amount: 30 }
+        ] },
+        { name: 'Dependent 2', expenses: [
+          { month: 4, type: 'preventive', label: 'Annual checkup', amount: 200 }
+        ] }
+      ]
+    },
+    {
+      id: 'surgery',
+      label: 'One adult has major surgery',
+      note: 'One person absorbs almost the entire year. This is where embedded and aggregate part company hardest, so flip the structure above and watch what happens to Adult 1.',
+      members: [
+        { name: 'Adult 1', expenses: [
+          { month: 2, type: 'preventive', label: 'Annual checkup', amount: 250 },
+          { month: 7, type: 'standard', label: 'Knee surgery and hospital stay', amount: 48000 },
+          { month: 9, type: 'standard', label: 'Physical therapy course', amount: 3200 }
+        ] },
+        { name: 'Adult 2', expenses: [
+          { month: 3, type: 'preventive', label: 'Annual checkup', amount: 250 },
+          { month: 6, type: 'copay', label: 'Prescription refill', amount: 25 }
+        ] },
+        { name: 'Dependent 1', expenses: [
+          { month: 4, type: 'preventive', label: 'Annual checkup', amount: 200 }
+        ] },
+        { name: 'Dependent 2', expenses: [
+          { month: 4, type: 'preventive', label: 'Annual checkup', amount: 200 }
+        ] }
+      ]
+    },
+    {
+      id: 'scripts',
+      label: 'Two dependents on ongoing prescriptions',
+      note: 'Steady monthly copays all year for two members. Copays skip the deductible entirely but still count toward the out-of-pocket max, so the deductible meter barely moves while the out-of-pocket meter climbs all year. Only Dependent 2\'s specialist visit touches the deductible at all.',
+      members: (function () {
+        var k1 = [{ month: 4, type: 'preventive', label: 'Annual checkup', amount: 200 }];
+        var k2 = [{ month: 4, type: 'preventive', label: 'Annual checkup', amount: 200 },
+                  { month: 8, type: 'standard', label: 'Specialist visit', amount: 420 }];
+        for (var m = 1; m <= 12; m++) {
+          k1.push({ month: m, type: 'copay', label: 'Monthly prescription', amount: 45 });
+          k2.push({ month: m, type: 'copay', label: 'Monthly prescription', amount: 60 });
+        }
+        return [
+          { name: 'Adult 1', expenses: [{ month: 2, type: 'preventive', label: 'Annual checkup', amount: 250 }] },
+          { name: 'Adult 2', expenses: [{ month: 3, type: 'preventive', label: 'Annual checkup', amount: 250 }] },
+          { name: 'Dependent 1', expenses: k1 },
+          { name: 'Dependent 2', expenses: k2 }
+        ];
+      })()
+    },
+    {
+      id: 'heavy',
+      label: 'A high-cost year for everyone',
+      note: 'Four people, four real events. The family deductible falls in May and the family out-of-pocket max in September, which makes October free for everyone. Both structures land on the same family total here, but on very different per-person bills.',
+      members: [
+        { name: 'Adult 1', expenses: [
+          { month: 2, type: 'preventive', label: 'Annual checkup', amount: 250 },
+          { month: 4, type: 'standard', label: 'Emergency room visit', amount: 4800 },
+          { month: 10, type: 'standard', label: 'MRI and specialist', amount: 9000 }
+        ] },
+        { name: 'Adult 2', expenses: [
+          { month: 3, type: 'preventive', label: 'Annual checkup', amount: 250 },
+          { month: 6, type: 'standard', label: 'Outpatient procedure', amount: 22000 },
+          { month: 8, type: 'copay', label: 'Prescription refill', amount: 40 }
+        ] },
+        { name: 'Dependent 1', expenses: [
+          { month: 4, type: 'preventive', label: 'Annual checkup', amount: 200 },
+          { month: 5, type: 'standard', label: 'Broken arm, ER and follow-up', amount: 6400 }
+        ] },
+        { name: 'Dependent 2', expenses: [
+          { month: 4, type: 'preventive', label: 'Annual checkup', amount: 200 },
+          { month: 9, type: 'standard', label: 'Tonsillectomy', amount: 12000 }
+        ] }
+      ]
+    }
+  ];
+
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function presets() { return mode === 'family' ? FAMILY_PRESETS : INDIVIDUAL_PRESETS; }
+
+  // ---------------------------------------------------------------- engine
+  // Walks the plan year in month order and returns the full result, including
+  // the ledger of events and the milestones crossed along the way.
+  function simulate(structure) {
+    var coinsRate = Math.min(100, Math.max(0, plan.coins)) / 100;
+    var indDed = Math.max(0, plan.indDed);
+    var famDed = Math.max(0, plan.famDed);
+    var indOOP = Math.max(0, plan.indOOP);
+    var famOOP = Math.max(0, plan.famOOP);
+    // Individual mode has no embedded/aggregate distinction: there is only the
+    // one person's own deductible and out-of-pocket max, which is exactly what
+    // the embedded path applies once the family caps are out of reach.
+    var embedded = (mode === 'individual') || (structure === 'embedded');
+    // No real plan has a $0 out-of-pocket max, so a zero or cleared field means
+    // "no ceiling" rather than "the plan covers everything from the first dollar".
+    var indCap = indOOP > 0 ? indOOP : Infinity;
+    var famCap = famOOP > 0 ? famOOP : Infinity;
+    if (mode === 'individual') { famDed = Infinity; famCap = Infinity; }
+
+    var M = members.map(function (m) {
+      return { name: m.name, ded: 0, oop: 0, billed: 0, dedMet: null, oopMet: null };
+    });
+
+    var fDed = 0, fOOP = 0, fDedMet = null, fOOPMet = null;
+    var totBilled = 0, totPaid = 0, totPlan = 0;
+    var ledger = [];
+
+    // Flatten to a single chronological list. Ties within a month resolve by
+    // household order, then by the order the rows were entered.
+    var flat = [];
+    members.forEach(function (m, mi) {
+      m.expenses.forEach(function (e, ei) {
+        flat.push({ mi: mi, ei: ei, month: e.month, type: e.type, label: e.label, amount: Math.max(0, Number(e.amount) || 0) });
+      });
+    });
+    flat.sort(function (a, b) { return (a.month - b.month) || (a.mi - b.mi) || (a.ei - b.ei); });
+
+    flat.forEach(function (e) {
+      var m = M[e.mi];
+      if (!m) return;
+      var A = e.amount;
+      var dedPart = 0, pay = 0, note = '';
+
+      if (e.type === 'preventive') {
+        pay = 0;
+        note = 'Preventive care, covered 100%. Counts toward neither the deductible nor the out-of-pocket max.';
+      } else if (e.type === 'copay') {
+        var cRoom = embedded
+          ? Math.max(0, Math.min(indCap - m.oop, famCap - fOOP))
+          : Math.max(0, famCap - fOOP);
+        pay = Math.min(A, cRoom);
+        note = pay < A
+          ? 'A flat copay, but the out-of-pocket max is already reached, so the plan covers it.'
+          : 'A flat copay. Skips the deductible, still counts toward the out-of-pocket max.';
+      } else {
+        var dRoom = embedded
+          ? Math.max(0, Math.min(indDed - m.ded, famDed - fDed))
+          : Math.max(0, famDed - fDed);
+        dedPart = Math.min(A, dRoom);
+        var want = dedPart + (A - dedPart) * coinsRate;
+        var oRoom = embedded
+          ? Math.max(0, Math.min(indCap - m.oop, famCap - fOOP))
+          : Math.max(0, famCap - fOOP);
+        pay = Math.min(want, oRoom);
+        if (pay < dedPart) dedPart = pay;
+
+        if (pay === 0) {
+          note = 'Out-of-pocket max already reached, so the plan pays all of it.';
+        } else if (dedPart === 0) {
+          note = 'Deductible already satisfied, so this is straight ' + plan.coins + '% coinsurance.';
+        } else if (pay < want) {
+          note = 'Would have been ' + fmt(want) + ', but the out-of-pocket max capped it here.';
+        } else {
+          note = 'Deductible first, then ' + plan.coins + '% coinsurance on the rest.';
+        }
+      }
+
+      var coinsPart = Math.max(0, pay - dedPart);
+
+      m.ded += dedPart; fDed += dedPart;
+      m.oop += pay; fOOP += pay;
+      m.billed += A;
+      totBilled += A; totPaid += pay; totPlan += (A - pay);
+
+      var crossed = [];
+      if (embedded) {
+        if (m.dedMet === null && indDed > 0 && m.ded >= indDed - 0.005) {
+          m.dedMet = e.month;
+          crossed.push({ pill: m.name + ': deductible met', what: m.name + ' stops paying full price. Their bills now split with the plan.' });
+        }
+        if (m.oopMet === null && indOOP > 0 && m.oop >= indOOP - 0.005) {
+          m.oopMet = e.month;
+          crossed.push({ pill: m.name + ': out-of-pocket max', what: m.name + ' has hit their individual ceiling of ' + fmt(indOOP) + '. They pay nothing more this year, whatever else happens to them.' });
+        }
+      }
+      if (fDedMet === null && famDed > 0 && fDed >= famDed - 0.005) {
+        fDedMet = e.month;
+        crossed.push({ pill: 'Family deductible met', what: 'The household has together paid ' + fmt(famDed) + '. Nobody pays deductible for the rest of the year, including anyone who never met their own.' });
+      }
+      if (fOOPMet === null && famOOP > 0 && fOOP >= famOOP - 0.005) {
+        fOOPMet = e.month;
+        crossed.push({ pill: 'Family out-of-pocket max', what: 'The household has hit its ceiling of ' + fmt(famOOP) + '. The plan pays 100% for every member for the rest of the year.' });
+      }
+
+      ledger.push({
+        month: e.month, who: m.name, label: e.label, type: e.type,
+        billed: A, ded: dedPart, coins: coinsPart, pay: pay, planPay: A - pay,
+        note: note, crossed: crossed
+      });
+    });
+
+    return {
+      members: M, ledger: ledger,
+      fDed: fDed, fOOP: fOOP, fDedMet: fDedMet, fOOPMet: fOOPMet,
+      totBilled: totBilled, totPaid: totPaid, totPlan: totPlan
+    };
+  }
+
+  // ---------------------------------------------------------------- render: inputs
+  function renderPresets() {
+    var row = $('presetRow');
+    row.innerHTML = '';
+    presets().forEach(function (p) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip';
+      b.textContent = p.label;
+      b.setAttribute('aria-pressed', activePreset === p.id ? 'true' : 'false');
+      b.addEventListener('click', function () { loadPreset(p.id); });
+      row.appendChild(b);
+    });
+    var active = presets().filter(function (p) { return p.id === activePreset; })[0];
+    $('presetNote').textContent = active ? active.note : 'Your own numbers. Load a scenario above to start from an example instead.';
+  }
+
+  function loadPreset(id) {
+    var p = presets().filter(function (x) { return x.id === id; })[0];
+    if (!p) return;
+    members = clone(p.members);
+    activePreset = id;
+    renderPresets();
+    renderHousehold();
+    calc();
+  }
+
+  function optionList(items, selected) {
+    return items.map(function (o) {
+      return '<option value="' + o.v + '"' + (String(o.v) === String(selected) ? ' selected' : '') + '>' + o.label + '</option>';
+    }).join('');
+  }
+
+  var monthOptions = MONTHS.map(function (m, i) { return { v: i + 1, label: m }; });
+
+  function renderHousehold() {
+    var host = $('household');
+    host.innerHTML = '';
+
+    members.forEach(function (m, mi) {
+      var el = document.createElement('div');
+      el.className = 'member';
+
+      var rows = m.expenses.map(function (e, ei) {
+        return '' +
+          '<div class="exp-row" data-mi="' + mi + '" data-ei="' + ei + '">' +
+            '<select class="f-month" data-k="month" aria-label="Month">' + optionList(monthOptions, e.month) + '</select>' +
+            '<select class="f-type" data-k="type" aria-label="Type of care">' + optionList(TYPES, e.type) + '</select>' +
+            '<input class="f-label" type="text" data-k="label" value="' + String(e.label || '').replace(/"/g, '&quot;') + '" placeholder="What was it?" aria-label="Description">' +
+            '<input class="f-amount" type="number" data-k="amount" value="' + e.amount + '" min="0" step="10" aria-label="Amount billed">' +
+            '<button type="button" class="btn-x f-remove" data-act="rm-exp" aria-label="Remove this expense">&times;</button>' +
+          '</div>';
+      }).join('');
+
+      el.innerHTML = '' +
+        '<div class="member-head">' +
+          '<input type="text" data-mi="' + mi + '" data-k="name" value="' + String(m.name).replace(/"/g, '&quot;') + '" aria-label="Member name">' +
+          (members.length > 1 ? '<button type="button" class="btn-x" data-act="rm-member" data-mi="' + mi + '" aria-label="Remove ' + String(m.name).replace(/"/g, '&quot;') + '">&times;</button>' : '') +
+        '</div>' +
+        (m.expenses.length
+          ? '<div class="exp-head"><span>Month</span><span>Type</span><span>What it was</span><span>Billed</span><span></span></div>' + rows
+          : '<p class="preset-note" style="margin:0 0 10px;">No care expected for this person yet.</p>') +
+        '<button type="button" class="btn-ghost" data-act="add-exp" data-mi="' + mi + '">+ Add expense</button>';
+
+      host.appendChild(el);
+    });
+
+    $('addMember').style.display = members.length >= 6 ? 'none' : '';
+    updateSoloState();
+  }
+
+  function updateSoloState() {
+    var solo = mode === 'individual';
+    var oneLeft = members.length <= 1;
+
+    $('structWrap').style.display = (solo || oneLeft) ? 'none' : '';
+    $('soloNote').style.display = (!solo && oneLeft) ? '' : 'none';
+    $('f-famDed').style.display = solo ? 'none' : '';
+    $('f-famOOP').style.display = solo ? 'none' : '';
+    $('addMember').style.display = (solo || members.length >= 6) ? 'none' : '';
+
+    var agg = !solo && !oneLeft && plan.structure === 'aggregate';
+    $('f-indDed').classList.toggle('dim', agg);
+    $('f-indOOP').classList.toggle('dim', agg);
+    $('aggNote').style.display = agg ? '' : 'none';
+
+    $('pageTitle').textContent = solo
+      ? 'How much will you actually pay this year?'
+      : 'On a family plan, who pays what?';
+    $('pageSub').textContent = solo
+      ? 'Put in the care you expect and the month it happens, and watch your deductible fill, coinsurance take over, and your out-of-pocket max stop the count. Add other people any time to see what a family plan does on top.'
+      : 'A family plan stacks a second layer on top of the usual deductible and out-of-pocket max. Put in a year of expected care for each person and watch where the money actually lands, which caps get hit, and in what month. Then flip the plan structure and watch the same year cost something different.';
+    $('householdTitle').textContent = solo ? 'Your year' : 'The household and their year';
+    $('householdSub').textContent = solo
+      ? 'Add the care you expect and the month it happens. Month matters: it decides when your deductible fills and when your costs stop for the year.'
+      : 'Add each person, then the care you expect them to need and the month it happens. Month matters: family caps fill up in the order care actually happens.';
+
+    $('paidLabel').textContent = solo ? 'You paid' : 'Your family paid';
+    $('dedMeterName').textContent = solo ? 'Your deductible' : 'Family deductible';
+    $('oopMeterName').textContent = solo ? 'Your out-of-pocket max' : 'Family out-of-pocket max';
+    $('memberTable').style.display = solo ? 'none' : '';
+
+    document.querySelectorAll('[data-mode]').forEach(function (el) {
+      if (el.classList.contains('mode-opt')) return;
+      el.style.display = el.getAttribute('data-mode') === mode ? '' : 'none';
+    });
+  }
+
+  function setMode(next) {
+    if (next === mode) return;
+    stash[mode] = { members: clone(members), preset: activePreset };
+    mode = next;
+    document.querySelectorAll('.mode-opt').forEach(function (b) {
+      b.setAttribute('aria-pressed', b.getAttribute('data-mode') === mode ? 'true' : 'false');
+    });
+    if (stash[mode]) {
+      members = clone(stash[mode].members);
+      activePreset = stash[mode].preset;
+      renderPresets();
+      renderHousehold();
+      calc();
+    } else {
+      loadPreset(mode === 'family' ? 'surgery' : 'procedure');
+    }
+  }
+
+  // ---------------------------------------------------------------- render: results
+  function capCell(paid, cap, metMonth, isOOP, applies) {
+    if (!applies) return '<span class="cap-cell">not applicable</span>';
+    if (!(cap > 0)) {
+      return '<span class="cap-cell">' + fmt(paid) + ' &middot; ' + (isOOP ? 'no limit set' : 'no deductible') + '</span>';
+    }
+    var pct = Math.min(100, (paid / cap) * 100);
+    var when = metMonth ? ' <span class="when">' + (isOOP ? 'max ' : 'met ') + MONTHS[metMonth - 1] + '</span>' : '';
+    return '<span class="cap-cell">' + fmt(paid) + ' / ' + fmt(cap) + when + '</span>' +
+      '<div class="minibar' + (isOOP ? ' oop' : '') + '"><i style="width:' + pct.toFixed(1) + '%"></i></div>';
+  }
+
+  function renderResults(r, other) {
+    var solo = mode === 'individual';
+    var oneLeft = members.length <= 1;
+    var embedded = plan.structure === 'embedded';
+
+    $('resultEyebrow').textContent = solo
+      ? 'Your year'
+      : oneLeft
+        ? 'The year, one person'
+        : 'The year, under ' + (embedded ? 'an embedded' : 'an aggregate') + ' plan';
+
+    $('tBilled').textContent = fmt(r.totBilled);
+    $('tPaid').textContent = fmt(r.totPaid);
+    $('tPlan').textContent = fmt(r.totPlan);
+
+    // In individual mode the meters track the one person's own caps; in family
+    // mode they track the household's.
+    var me = r.members[0];
+    var fd = solo ? Math.max(0, plan.indDed) : Math.max(0, plan.famDed);
+    var fo = solo ? Math.max(0, plan.indOOP) : Math.max(0, plan.famOOP);
+    var dedVal = solo ? (me ? me.ded : 0) : r.fDed;
+    var oopVal = solo ? (me ? me.oop : 0) : r.fOOP;
+    var dedMet = solo ? (me ? me.dedMet : null) : r.fDedMet;
+    var oopMet = solo ? (me ? me.oopMet : null) : r.fOOPMet;
+
+    $('dedFill').style.width = (fd > 0 ? Math.min(100, dedVal / fd * 100) : 0).toFixed(1) + '%';
+    $('oopFill').style.width = (fo > 0 ? Math.min(100, oopVal / fo * 100) : 0).toFixed(1) + '%';
+    $('dedLab').innerHTML = fd > 0
+      ? fmt(dedVal) + ' / ' + fmt(fd) + (dedMet ? ' <span class="met">met ' + MONTHS[dedMet - 1] + '</span>' : '')
+      : fmt(dedVal) + ' &middot; ' + (solo ? 'no deductible' : 'no family deductible');
+    $('oopLab').innerHTML = fo > 0
+      ? fmt(oopVal) + ' / ' + fmt(fo) + (oopMet ? ' <span class="met">reached ' + MONTHS[oopMet - 1] + '</span>' : '')
+      : fmt(oopVal) + ' &middot; no limit set';
+
+    // per-member table
+    $('memberRows').innerHTML = r.members.map(function (m) {
+      return '<tr>' +
+        '<td><strong>' + escapeHtml(m.name) + '</strong></td>' +
+        '<td class="num">' + fmt(m.billed) + '</td>' +
+        '<td class="you">' + fmt(m.oop) + '</td>' +
+        '<td>' + capCell(m.ded, plan.indDed, m.dedMet, false, embedded || solo) + '</td>' +
+        '<td>' + capCell(m.oop, plan.indOOP, m.oopMet, true, embedded || solo) + '</td>' +
+        '</tr>';
+    }).join('');
+
+    // chronological ledger
+    var ev = $('events');
+    if (!r.ledger.length) {
+      ev.innerHTML = '<div class="empty">No expenses yet. Add some care above, or load one of the scenarios, to see the year play out.</div>';
+    } else {
+      ev.innerHTML = r.ledger.map(function (e) {
+        var tags = '';
+        if (e.type === 'preventive') {
+          tags = '<span class="tag">$0 you</span><span class="tag plan">' + fmt(e.planPay) + ' plan</span>';
+        } else {
+          if (e.ded > 0) tags += '<span class="tag ded">' + fmt(e.ded) + ' deductible</span>';
+          if (e.coins > 0 && e.type === 'standard') tags += '<span class="tag co">' + fmt(e.coins) + ' coinsurance</span>';
+          tags += '<span class="tag pay">' + fmt(e.pay) + (e.type === 'copay' ? ' copay' : ' you') + '</span>';
+          tags += '<span class="tag plan">' + fmt(e.planPay) + ' plan</span>';
+        }
+        var block = '' +
+          '<div class="ev">' +
+            '<div class="ev-top">' +
+              '<span class="ev-when">' + MONTHS[e.month - 1] + ' &middot; ' + escapeHtml(e.who) + '</span>' +
+              '<span class="ev-what">' + escapeHtml(e.label || 'Care') + '</span>' +
+              '<span class="ev-billed">billed ' + fmt(e.billed) + '</span>' +
+            '</div>' +
+            '<div class="ev-break">' + tags + '</div>' +
+            '<div class="ev-note">' + e.note + '</div>' +
+          '</div>';
+        e.crossed.forEach(function (c) {
+          block += '<div class="milestone"><span class="pill">' + escapeHtml(c.pill) + '</span><span class="what">' + escapeHtml(c.what) + '</span></div>';
+        });
+        return block;
+      }).join('');
+    }
+
+    // structure contrast
+    var c = $('contrast');
+    if (solo || oneLeft) {
+      c.style.display = 'none';
+      return;
+    }
+    c.style.display = '';
+    var thisName = embedded ? 'embedded' : 'aggregate';
+    var otherName = embedded ? 'aggregate' : 'embedded';
+    var diff = other.totPaid - r.totPaid;
+
+    // Who moves the most between the two structures?
+    var biggest = null, bd = 0;
+    r.members.forEach(function (m, i) {
+      var d = other.members[i].oop - m.oop;
+      if (Math.abs(d) > Math.abs(bd) + 0.005) { bd = d; biggest = m; }
+    });
+
+    var html = '<span class="k">The same year, under the other structure</span>';
+    if (Math.abs(diff) < 1 && !biggest) {
+      html += 'This scenario costs your family <strong>' + fmt(r.totPaid) + '</strong> either way. Nobody spends enough for the individual caps to come into play, so embedded and aggregate are identical here. Push one member\'s costs up and that changes fast.';
+    } else {
+      if (Math.abs(diff) < 1) {
+        html += 'Both structures land on the same family total, <strong>' + fmt(r.totPaid) + '</strong>, because the household reaches the family cap either way. What changes is who pays it: ';
+      } else if (diff > 0) {
+        html += 'Under <b>' + otherName + '</b>, this same year would cost your family <strong>' + fmt(other.totPaid) + '</strong> instead of ' + fmt(r.totPaid) + ', a difference of <strong>' + fmt(Math.abs(diff)) + '</strong>. ';
+      } else {
+        html += 'Under <b>' + otherName + '</b>, this same year would cost your family <strong>' + fmt(other.totPaid) + '</strong> instead of ' + fmt(r.totPaid) + ', saving <strong>' + fmt(Math.abs(diff)) + '</strong>. ';
+      }
+      if (biggest) {
+        var i = r.members.indexOf(biggest);
+        // The individual out-of-pocket cap only explains the gap when it actually
+        // bound. The embedded run is the only one that tracks individual caps.
+        var embRecord = embedded ? biggest : other.members[i];
+        var cappedOut = embRecord && embRecord.oopMet !== null;
+        html += escapeHtml(biggest.name) + ' pays <strong>' + fmt(biggest.oop) + '</strong> under ' + thisName +
+          ' and <strong>' + fmt(other.members[i].oop) + '</strong> under ' + otherName + '. ';
+        if (cappedOut) {
+          html += embedded
+            ? 'Embedded stops them at their individual out-of-pocket max of ' + fmt(plan.indOOP) + '. Aggregate has no individual cap, so they keep going until the family reaches ' + fmt(plan.famOOP) + '.'
+            : 'Aggregate has no individual cap in the way, so they keep paying toward the family ceiling of ' + fmt(plan.famOOP) + '. Embedded would stop them at ' + fmt(plan.indOOP) + '.';
+        } else {
+          html += 'Nobody hits an individual out-of-pocket max here, so what moves is the deductible. Aggregate makes the household fill the whole ' + fmt(plan.famDed) + ' family deductible before anyone gets coinsurance, so whoever has the first large bill absorbs more of it. Embedded caps each person\'s share of it at ' + fmt(plan.indDed) + '.';
+        }
+      }
+    }
+    c.innerHTML = html;
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // ---------------------------------------------------------------- wiring
+  function readPlanInputs() {
+    plan.indDed = Math.max(0, parseFloat($('indDed').value) || 0);
+    plan.famDed = Math.max(0, parseFloat($('famDed').value) || 0);
+    plan.coins = Math.min(100, Math.max(0, parseFloat($('coins').value) || 0));
+    plan.indOOP = Math.max(0, parseFloat($('indOOP').value) || 0);
+    plan.famOOP = Math.max(0, parseFloat($('famOOP').value) || 0);
+  }
+
+  function calc() {
+    readPlanInputs();
+    updateSoloState();
+    var here = simulate(plan.structure);
+    var there = simulate(plan.structure === 'embedded' ? 'aggregate' : 'embedded');
+    renderResults(here, there);
+  }
+
+  ['indDed', 'famDed', 'coins', 'indOOP', 'famOOP'].forEach(function (id) {
+    $(id).addEventListener('input', calc);
+  });
+
+  document.querySelectorAll('.mode-opt').forEach(function (btn) {
+    btn.addEventListener('click', function () { setMode(btn.getAttribute('data-mode')); });
+  });
+
+  document.querySelectorAll('.struct-opt[data-struct]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      plan.structure = btn.getAttribute('data-struct');
+      document.querySelectorAll('.struct-opt[data-struct]').forEach(function (b) {
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
+      calc();
+    });
+  });
+
+  // Live edits write straight to state without re-rendering, so focus is kept.
+  $('household').addEventListener('input', function (e) {
+    var t = e.target;
+    var k = t.getAttribute('data-k');
+    if (!k) return;
+
+    if (k === 'name') {
+      var mi = parseInt(t.getAttribute('data-mi'), 10);
+      if (members[mi]) members[mi].name = t.value;
+      calc();
+      return;
+    }
+
+    var row = t.closest('.exp-row');
+    if (!row) return;
+    var rmi = parseInt(row.getAttribute('data-mi'), 10);
+    var rei = parseInt(row.getAttribute('data-ei'), 10);
+    var exp = members[rmi] && members[rmi].expenses[rei];
+    if (!exp) return;
+
+    if (k === 'month') exp.month = parseInt(t.value, 10);
+    else if (k === 'type') exp.type = t.value;
+    else if (k === 'label') exp.label = t.value;
+    else if (k === 'amount') exp.amount = Math.max(0, parseFloat(t.value) || 0);
+
+    markCustom();
+    calc();
+  });
+
+  // Add / remove needs a re-render, since row indexes shift.
+  $('household').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-act]');
+    if (!btn) return;
+    var act = btn.getAttribute('data-act');
+
+    if (act === 'add-exp') {
+      var mi = parseInt(btn.getAttribute('data-mi'), 10);
+      members[mi].expenses.push({ month: 1, type: 'standard', label: '', amount: 0 });
+    } else if (act === 'rm-exp') {
+      var row = btn.closest('.exp-row');
+      members[parseInt(row.getAttribute('data-mi'), 10)].expenses.splice(parseInt(row.getAttribute('data-ei'), 10), 1);
+    } else if (act === 'rm-member') {
+      if (members.length <= 1) return;
+      members.splice(parseInt(btn.getAttribute('data-mi'), 10), 1);
+    } else {
+      return;
+    }
+    markCustom();
+    renderHousehold();
+    calc();
+  });
+
+  $('addMember').addEventListener('click', function () {
+    if (members.length >= 6) return;
+    members.push({ name: 'Member ' + (members.length + 1), expenses: [] });
+    markCustom();
+    renderHousehold();
+    calc();
+  });
+
+  function markCustom() {
+    if (activePreset !== null) {
+      activePreset = null;
+      renderPresets();
+    }
+  }
+
+  // ---------------------------------------------------------------- boot
+  loadPreset('surgery');
+})();
+</script>
+
+</body>
+</html>
